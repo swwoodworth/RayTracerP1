@@ -1,0 +1,71 @@
+OBJS = Main.o RayTracerObject.o CameraObj.o LightSourceObj.o TranslateObj.o \
+       ScaleObj.o RotateObj.o PigmentObj.o FinishObj.o SphereObj.o BoxObj.o \
+       ConeObj.o PlaneObj.o TriangleObj.o
+CC = g++
+DEBUG = -g
+CFLAGS = -Wall -c $(DEBUG)
+LFLAGS = -Wall $(DEBUG)
+
+RayTracer : $(OBJS)
+	$(CC) $(LFLAGS) $(OBJS) -o RayTracer
+	
+Main.o : Main.cpp
+	$(CC) $(CFLAGS) Main.cpp
+
+RayTracerObject.o : RayTracerObject.hpp RayTracerObject.cpp
+	$(CC) $(CFLAGS) RayTracerObject.cpp
+	
+CameraObj.o : CameraObj.hpp CameraObj.cpp
+	$(CC) $(CFLAGS) CameraObj.cpp
+	
+LightSourceObj.o : LightSourceObj.hpp LightSourceObj.cpp
+	$(CC) $(CFLAGS) LightSourceObj.cpp
+
+TranslateObj.o : TranslateObj.hpp TranslateObj.cpp
+	$(CC) $(CFLAGS) TranslateObj.cpp
+
+ScaleObj.o : ScaleObj.hpp ScaleObj.cpp
+	$(CC) $(CFLAGS) ScaleObj.cpp
+
+RotateObj.o : RotateObj.hpp RotateObj.cpp
+	$(CC) $(CFLAGS) RotateObj.cpp
+	
+PigmentObj.o : PigmentObj.hpp PigmentObj.cpp
+	$(CC) $(CFLAGS) PigmentObj.cpp
+
+FinishObj.o : FinishObj.hpp FinishObj.cpp
+	$(CC) $(CFLAGS) FinishObj.cpp
+
+SphereObj.o : SphereObj.hpp SphereObj.cpp
+	$(CC) $(CFLAGS) SphereObj.cpp
+	
+BoxObj.o : BoxObj.hpp BoxObj.cpp
+	$(CC) $(CFLAGS) BoxObj.cpp
+	
+ConeObj.o : ConeObj.hpp ConeObj.cpp
+	$(CC) $(CFLAGS) ConeObj.cpp
+
+PlaneObj.o : PlaneObj.hpp PlaneObj.cpp
+	$(CC) $(CFLAGS) PlaneObj.cpp
+	
+TriangleObj.o : TriangleObj.hpp TriangleObj.cpp
+	$(CC) $(CFLAGS) TriangleObj.cpp
+
+clean:
+	\rm *.o RayTracer
+
+tar:
+	tar cfv rayTracer.tar RayTracerObject.hpp RayTracerObject.cpp \
+	         CameraObj.hpp CameraObj.cpp \
+	         LightSourceObj.hpp LightSourceObj.cpp \
+	         TranslateObj.hpp TranslateObj.cpp \
+	         ScaleObj.hpp ScaleObj.cpp \
+	         RotateObj.hpp RotateObj.cpp \
+	         PigmentObj.hpp PigmentObj.cpp \
+	         FinishObj.hpp FinishObj.cpp \
+	         SphereObj.hpp SphereObj.cpp \
+	         BoxObj.hpp BoxObj.cpp \
+	         ConeObj.hpp ConeObj.cpp \
+	         PlaneObj.hpp PlaneObj.cpp \
+	         TriangleObj.hpp TriangleObj.cpp \
+            Main.cpp Makefile
