@@ -1,6 +1,6 @@
 OBJS = Main.o RayTracerObject.o CameraObj.o LightSourceObj.o TranslateObj.o \
        ScaleObj.o RotateObj.o PigmentObj.o FinishObj.o SphereObj.o BoxObj.o \
-       ConeObj.o PlaneObj.o TriangleObj.o
+       ConeObj.o PlaneObj.o TriangleObj.o RayTracer.o TGAWriter.o
 CC = g++
 DEBUG = -g
 CFLAGS = -Wall -c $(DEBUG)
@@ -50,6 +50,12 @@ PlaneObj.o : PlaneObj.hpp PlaneObj.cpp
 	
 TriangleObj.o : TriangleObj.hpp TriangleObj.cpp
 	$(CC) $(CFLAGS) TriangleObj.cpp
+	
+RayTracer.o : RayTracer.hpp RayTracer.cpp
+	$(CC) $(CFLAGS) RayTracer.cpp
+	
+TGAWriter.o : TGAWriter.hpp TGAWriter.cpp
+	$(CC) $(CFLAGS) TGAWriter.cpp
 
 clean:
 	\rm *.o RayTracer
@@ -68,4 +74,6 @@ tar:
 	         ConeObj.hpp ConeObj.cpp \
 	         PlaneObj.hpp PlaneObj.cpp \
 	         TriangleObj.hpp TriangleObj.cpp \
+	         RayTracer.hpp RayTracer.cpp \
+	         TGAWriter.hpp TGAWriter.cpp \
             Main.cpp Makefile

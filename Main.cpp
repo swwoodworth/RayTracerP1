@@ -6,6 +6,7 @@
 #include "ConeObj.hpp"
 #include "PlaneObj.hpp"
 #include "TriangleObj.hpp"
+#include "RayTracer.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -22,6 +23,19 @@
 using namespace std;
 using namespace glm;
 
+vector<CameraObj*> cameras;
+vector<LightSourceObj*> lights;
+   
+vector<SphereObj*> spheres;
+vector<BoxObj*> boxes;
+vector<ConeObj*> cones;
+vector<PlaneObj*> planes;
+vector<TriangleObj*> triangles;
+
+void parsePOV(ifstream &poVFile);
+void printPOV();
+
+
 int main(int argc, char* argv[])
 {
    if (argc < 5) // Check the value of argc. If not enough parameters have been passed, inform user and exit.
@@ -30,8 +44,25 @@ int main(int argc, char* argv[])
         return -1;
    }
    
-   string token;
+   int screenWidth = atoi(argv[1]);
+   int screenHeight = atoi(argv[2]);
    
+   if ( !screenWidth ) {
+      cout << "Invalid image width\n";
+      cout << "Usage: RayTracer imageWidth imageHeight -I inputFilename.pov\n" ; // Inform the user of how to use the program
+      return -1;
+   }
+   if ( !screenHeight) {
+      cout << "Invalid image height\n";
+      cout << "Usage: RayTracer imageWidth imageHeight -I inputFilename.pov\n" ; // Inform the user of how to use the program
+      return -1;
+   }
+   if(screenHeight > 1440 || screenWidth > 1440)
+   {
+      cout << "Image size too large\n";
+      return -1;
+   }
+      
    vector<CameraObj*> cameras;
    vector<LightSourceObj*> lights;
    
@@ -48,6 +79,18 @@ int main(int argc, char* argv[])
      return -1;
    }
    
+   parsePOV(povFile);
+   printPOV();
+   RayTracer rt;
+   rt.trace(screenWidth, screenHeight);
+   //cout << "I ran!\n";
+   return 0;
+}
+
+void parsePOV(ifstream &povFile)
+{
+   string token;
+
    while(povFile.good()) // check if at eof
    {
       povFile >> token;
@@ -104,7 +147,10 @@ int main(int argc, char* argv[])
       //cout << token << endl;
       token = "";
    }
-   
+}
+
+void printPOV()
+{
    for(unsigned int i = 0; i<cameras.size(); i++)
    {
       cout << "Camera: " << *cameras[i] << endl;
@@ -139,6 +185,4 @@ int main(int argc, char* argv[])
    {
       cout << "Triangle: " << *triangles[i] << endl;
    }
-   //cout << "I ran!\n";
-   return 0;
 }

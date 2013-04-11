@@ -23,7 +23,7 @@ class TGAWriter {
   public:
    TGAWriter(); //default constructor
    ~TGAWriter(); //destructor
-   void writeTGA(Pixel *pixels, int screenHeight, int screenWidth);
+   void writeTGA(Pixel *pixels, int screenWidth, int screenHeight);
 };
 
 #endif

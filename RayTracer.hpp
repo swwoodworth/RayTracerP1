@@ -1,6 +1,8 @@
 #ifndef RAYT_H
 #define RAYT_H
 
+#include "TGAWriter.hpp"
+
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -15,10 +17,12 @@
 using namespace std;
 using namespace glm;
 
+
 class RayTracer {
   public:
    RayTracer(); //default constructor
    ~RayTracer(); //destructor
+   void trace(int screenWidth, int screenHeight);
 };
 
 #endif

@@ -5,7 +5,7 @@ TGAWriter::TGAWriter() {
 
 TGAWriter::~TGAWriter() {}
 
-void TGAWriter::writeTGA(Pixel *pixels, int screenHeight, int screenWidth) {
+void TGAWriter::writeTGA(Pixel *pixels, int screenWidth, int screenHeight) {
    // tga
    FILE *fp;
    //int x, y;
