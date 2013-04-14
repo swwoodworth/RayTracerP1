@@ -57,8 +57,6 @@ void TGAWriter::writeTGA(Pixel *pixels, int screenWidth, int screenHeight) {
          fputc((char)((pixels[i*(screenWidth) + j].b)*255),fp);
          fputc((char)((pixels[i*(screenWidth) + j].g)*255),fp);
          fputc((char)((pixels[i*(screenWidth) + j].r)*255),fp);
-         //cout << ((pixels[i*(screenWidth) + j].b)*255) << " ";
-
       }
       //cout << "\n";
       
