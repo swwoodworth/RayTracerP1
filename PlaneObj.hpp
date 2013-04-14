@@ -28,9 +28,10 @@ class PlaneObj : public RayTracerObject {
     PlaneObj(int id);
     ~PlaneObj();
     void parse(ifstream &povFile);
+    double intersect(vec3 d, vec3 p_0);
     friend ostream& operator<< (ostream &out, PlaneObj &planeObj);    
     vec3 normal;
-    double distance;
+    float distance;
     PigmentObj *pObj;
     FinishObj *fObj;
     TranslateObj *tObj;

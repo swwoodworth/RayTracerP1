@@ -28,6 +28,7 @@ class SphereObj : public RayTracerObject {
     SphereObj(int id);
     ~SphereObj();
     void parse(ifstream &povFile);
+    double intersect(vec3 d, vec3 p_0);
     friend ostream& operator<< (ostream &out, SphereObj &sphereObj);    
     vec3 location;
     double radius;

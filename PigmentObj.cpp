@@ -37,6 +37,8 @@ void PigmentObj::parse(ifstream &povFile) {
    pigment.y = atof(strtok (NULL," <,>"));
    pigment.z = atof(strtok (NULL," <,>"));
    
+   //cout << pigment.x << endl;
+   
    if(token.compare("rgbf") == 0)
       pigment.w = atof(strtok (NULL," <,>"));
    else

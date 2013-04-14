@@ -42,7 +42,8 @@ ostream& operator<< (ostream &out, SphereObj &sphereObj)
 }
 
 
-void SphereObj::parse(ifstream &povFile) {
+void SphereObj::parse(ifstream &povFile) 
+{
    string token;
    string line;
    char *line2;
@@ -89,3 +90,29 @@ void SphereObj::parse(ifstream &povFile) {
       }
    }
 }
+
+double SphereObj::intersect(vec3 d, vec3 p_0)
+{
+   double a, b, c, discrim, t_1, t_2;
+   
+   vec3 e = (p_0 - location);
+   
+   a = dot(d,d);
+   b = dot(2.0f*d, e);
+   c = dot(e, e) - pow(radius,2);
+
+   discrim = pow(b,2) - 4*a*c;
+   if(discrim < 0)
+      return -1.0;
+   else
+   {
+      t_1 = (-b + sqrt(discrim))/2*a;
+      t_2 = (-b - sqrt(discrim))/2*a;
+      if(std::min(t_1,t_2)>0.0)
+         return std::min(t_1,t_2);
+      else 
+         return std::max(t_1,t_2);
+   }
+
+}
+

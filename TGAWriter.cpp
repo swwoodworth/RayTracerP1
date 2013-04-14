@@ -37,21 +37,31 @@ void TGAWriter::writeTGA(Pixel *pixels, int screenWidth, int screenHeight) {
 
    // width and height        
    fputc((screenWidth & 0x00FF),fp);
-   fputc((screenWidth & 0xFF00) >> 8,fp);
+   fputc((screenWidth & 0xFF00) / 256,fp);
    fputc((screenHeight & 0x00FF),fp);
-   fputc((screenHeight & 0xFF00) >> 8,fp);
+   fputc((screenHeight & 0xFF00) / 256,fp);
 
    // 24 bit bitmap 
    fputc(24,fp);                        
    fputc(0,fp);
 
    //Write Data
-   int size = screenHeight * screenWidth;
-   for (int i = 0; i < size; i++)
+   for (int i = 0; i < screenHeight; i++)
    {
-      fputc(((unsigned char)pixels[i].r),fp);
-      fputc(((unsigned char)pixels[i].g),fp);
-      fputc(((unsigned char)pixels[i].b),fp);
+      for (int j = 0; j < screenWidth; j++)
+      {
+         //if(pixels[i*(screenWidth) + j].r != 0)
+         //   cout << pixels[i*(screenWidth) + j].r << endl;
+         //else 
+         //   cout << "-";
+         fputc((char)((pixels[i*(screenWidth) + j].b)*255),fp);
+         fputc((char)((pixels[i*(screenWidth) + j].g)*255),fp);
+         fputc((char)((pixels[i*(screenWidth) + j].r)*255),fp);
+         //cout << ((pixels[i*(screenWidth) + j].b)*255) << " ";
+
+      }
+      //cout << "\n";
+      
    }
 
    fclose(fp);

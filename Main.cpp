@@ -32,6 +32,9 @@ vector<ConeObj*> cones;
 vector<PlaneObj*> planes;
 vector<TriangleObj*> triangles;
 
+int screenWidth;
+int screenHeight;
+
 void parsePOV(ifstream &poVFile);
 void printPOV();
 
@@ -44,8 +47,8 @@ int main(int argc, char* argv[])
         return -1;
    }
    
-   int screenWidth = atoi(argv[1]);
-   int screenHeight = atoi(argv[2]);
+   screenWidth = atoi(argv[1]);
+   screenHeight = atoi(argv[2]);
    
    if ( !screenWidth ) {
       cout << "Invalid image width\n";
@@ -62,15 +65,6 @@ int main(int argc, char* argv[])
       cout << "Image size too large\n";
       return -1;
    }
-      
-   vector<CameraObj*> cameras;
-   vector<LightSourceObj*> lights;
-   
-   vector<SphereObj*> spheres;
-   vector<BoxObj*> boxes;
-   vector<ConeObj*> cones;
-   vector<PlaneObj*> planes;
-   vector<TriangleObj*> triangles;
 
    ifstream povFile ( argv[4] ); 
    if ( !povFile.is_open() ) 
@@ -82,7 +76,7 @@ int main(int argc, char* argv[])
    parsePOV(povFile);
    printPOV();
    RayTracer rt;
-   rt.trace(screenWidth, screenHeight);
+   rt.trace();
    //cout << "I ran!\n";
    return 0;
 }

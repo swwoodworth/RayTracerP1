@@ -16,7 +16,7 @@ using namespace std;
 using namespace glm;
 
 struct Pixel {
-   int r, g, b;
+   float r, g, b;
 };
 
 class TGAWriter {
