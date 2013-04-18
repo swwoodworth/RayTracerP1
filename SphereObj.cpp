@@ -91,7 +91,7 @@ void SphereObj::parse(ifstream &povFile)
    }
 }
 
-bool SphereObj::intersect(vec3 d, vec3 p_0, double* t)
+bool SphereObj::intersect(vec3 d, vec3 p_0, float* t)
 {
    double a, b, c, discrim, t_1, t_2;
    
@@ -116,4 +116,10 @@ bool SphereObj::intersect(vec3 d, vec3 p_0, double* t)
    }
 
 }
+
+vec3 SphereObj::getNormal(vec3 intersect) 
+{
+   return normalize(vec3(intersect - location));
+}
+
 

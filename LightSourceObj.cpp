@@ -42,6 +42,8 @@ void LightSourceObj::parse(ifstream &povFile) {
    color.y = atof(strtok (NULL,"{ <,>}"));
    color.z = atof(strtok (NULL,"{ <,>}"));
    
+   color = normalize(color);
+   
    //cout << "I'm done parsing a light source" << endl;
 
    return;

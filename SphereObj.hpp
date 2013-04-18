@@ -29,7 +29,8 @@ class SphereObj : public Geometry {
     SphereObj(int id);
     ~SphereObj();
     void parse(ifstream &povFile);
-    bool intersect(vec3 d, vec3 p_0, double* t);
+    bool intersect(vec3 d, vec3 p_0, float* t);
+    vec3 getNormal(vec3 intersect);
     friend ostream& operator<< (ostream &out, SphereObj &sphereObj);    
     vec3 location;
     double radius;

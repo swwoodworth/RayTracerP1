@@ -2,10 +2,24 @@
 
 FinishObj::FinishObj() {
    ObjID = -1;
+   ambient = 0.1;
+   diffuse = 0.6;
+   specular = 0.0;
+   roughness = 0.05;
+   reflection = 0.0;
+   refraction = 0.0;
+   ior = 1.0;
 }
 
 FinishObj::FinishObj(int id) {
    ObjID = id;
+   ambient = 0.1;
+   diffuse = 0.6;
+   specular = 0.0;
+   roughness = 0.05;
+   reflection = 0.0;
+   refraction = 0.0;
+   ior = 1.0;
 }
 
 FinishObj::~FinishObj() {}

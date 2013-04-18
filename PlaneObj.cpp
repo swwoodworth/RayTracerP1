@@ -71,7 +71,7 @@ void PlaneObj::parse(ifstream &povFile) {
    }
 }
 
-bool PlaneObj::intersect(vec3 d, vec3 p_0, double* t)
+bool PlaneObj::intersect(vec3 d, vec3 p_0, float* t)
 {
    vec3 p;
    
@@ -83,5 +83,10 @@ bool PlaneObj::intersect(vec3 d, vec3 p_0, double* t)
    *t = dot((p-p_0), normal)/dot(d, normal);
    //cout << t << endl;
    return true;
+}
+
+vec3 PlaneObj::getNormal(vec3 intersect) 
+{
+   return normalize(normal);
 }
 
