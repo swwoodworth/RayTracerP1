@@ -2,6 +2,7 @@
 #define SPHERE_H
 
 #include "RayTracerObject.hpp"
+#include "Geometry.hpp"
 #include "PigmentObj.hpp"
 #include "FinishObj.hpp"
 #include "TranslateObj.hpp"
@@ -22,7 +23,7 @@
 using namespace std;
 using namespace glm;
 
-class SphereObj : public RayTracerObject {
+class SphereObj : public Geometry {
   public:
     SphereObj();
     SphereObj(int id);
@@ -32,11 +33,6 @@ class SphereObj : public RayTracerObject {
     friend ostream& operator<< (ostream &out, SphereObj &sphereObj);    
     vec3 location;
     double radius;
-    PigmentObj *pObj;
-    FinishObj *fObj;
-    TranslateObj *tObj;
-    ScaleObj *sObj;
-    RotateObj *rObj;
 };
 
 #endif

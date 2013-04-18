@@ -2,6 +2,7 @@
 #define CONE_H
 
 #include "RayTracerObject.hpp"
+#include "Geometry.hpp"
 #include "PigmentObj.hpp"
 #include "FinishObj.hpp"
 #include "TranslateObj.hpp"
@@ -22,7 +23,7 @@
 using namespace std;
 using namespace glm;
 
-class ConeObj : public RayTracerObject {
+class ConeObj : public Geometry {
   public:
     ConeObj();
     ConeObj(int id);
@@ -33,11 +34,6 @@ class ConeObj : public RayTracerObject {
     vec3 end2;
     double radius1;
     double radius2;
-    PigmentObj *pObj;
-    FinishObj *fObj;
-    TranslateObj *tObj;
-    ScaleObj *sObj;
-    RotateObj *rObj;
 };
 
 #endif

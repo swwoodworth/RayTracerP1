@@ -2,6 +2,7 @@
 #define PLANE_H
 
 #include "RayTracerObject.hpp"
+#include "Geometry.hpp"
 #include "PigmentObj.hpp"
 #include "FinishObj.hpp"
 #include "TranslateObj.hpp"
@@ -22,7 +23,7 @@
 using namespace std;
 using namespace glm;
 
-class PlaneObj : public RayTracerObject {
+class PlaneObj : public Geometry {
   public:
     PlaneObj();
     PlaneObj(int id);
@@ -32,11 +33,6 @@ class PlaneObj : public RayTracerObject {
     friend ostream& operator<< (ostream &out, PlaneObj &planeObj);    
     vec3 normal;
     float distance;
-    PigmentObj *pObj;
-    FinishObj *fObj;
-    TranslateObj *tObj;
-    ScaleObj *sObj;
-    RotateObj *rObj;
 };
 
 #endif

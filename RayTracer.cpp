@@ -47,7 +47,7 @@ void RayTracer::trace()
          
          d = s_prime - p_0;
          
-         for(int s = 0; s < (int) spheres.size(); s++)
+         /*for(int s = 0; s < (int) spheres.size(); s++)
          {
             t = (*spheres[s]).intersect(d, p_0);
             if(t > 0.0 && t < depth)
@@ -71,6 +71,21 @@ void RayTracer::trace()
                pixels[i*(screenWidth) + j].r = (*(*planes[p]).pObj).pigment.x;
                pixels[i*(screenWidth) + j].g = (*(*planes[p]).pObj).pigment.y;
                pixels[i*(screenWidth) + j].b = (*(*planes[p]).pObj).pigment.z;
+               //cout << "color " << (*(*planes[p]).pObj).pigment.x << ", " << (*(*planes[p]).pObj).pigment.y << ", " << (*(*planes[p]).pObj).pigment.z << endl;
+            }
+         }*/
+         
+         for(int k = 0; k < (int) geometry.size(); k++)
+         {
+            t = (*geometry[k]).intersect(d, p_0);
+            //cout << t << endl;
+            if(t > 0.0 && t < depth)
+            {
+               
+               depth = t;
+               pixels[i*(screenWidth) + j].r = (*(*geometry[k]).pObj).pigment.x;
+               pixels[i*(screenWidth) + j].g = (*(*geometry[k]).pObj).pigment.y;
+               pixels[i*(screenWidth) + j].b = (*(*geometry[k]).pObj).pigment.z;
                //cout << "color " << (*(*planes[p]).pObj).pigment.x << ", " << (*(*planes[p]).pObj).pigment.y << ", " << (*(*planes[p]).pObj).pigment.z << endl;
             }
          }

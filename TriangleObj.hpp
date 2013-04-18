@@ -2,6 +2,7 @@
 #define TRI_H
 
 #include "RayTracerObject.hpp"
+#include "Geometry.hpp"
 #include "PigmentObj.hpp"
 #include "FinishObj.hpp"
 #include "TranslateObj.hpp"
@@ -22,7 +23,7 @@
 using namespace std;
 using namespace glm;
 
-class TriangleObj : public RayTracerObject {
+class TriangleObj : public Geometry {
   public:
     TriangleObj();
     TriangleObj(int id);
@@ -32,11 +33,6 @@ class TriangleObj : public RayTracerObject {
     vec3 corner1;
     vec3 corner2;
     vec3 corner3;
-    PigmentObj *pObj;
-    FinishObj *fObj;
-    TranslateObj *tObj;
-    ScaleObj *sObj;
-    RotateObj *rObj;
 };
 
 #endif

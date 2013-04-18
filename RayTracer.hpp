@@ -37,6 +37,9 @@ extern vector<ConeObj*> cones;
 extern vector<PlaneObj*> planes;
 extern vector<TriangleObj*> triangles;
 
+extern vector<Geometry*> geometry;
+
+
 extern int screenWidth;
 extern int screenHeight;
 

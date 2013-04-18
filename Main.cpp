@@ -32,6 +32,8 @@ vector<ConeObj*> cones;
 vector<PlaneObj*> planes;
 vector<TriangleObj*> triangles;
 
+vector<Geometry*> geometry;
+
 int screenWidth;
 int screenHeight;
 
@@ -108,35 +110,40 @@ void parsePOV(ifstream &povFile)
          //cout << "Found sphere\n";
          SphereObj *sphere = new SphereObj();
          sphere->parse(povFile);
-         spheres.push_back(sphere);
+         geometry.push_back(sphere);
       }
       if(token.compare("box") == 0)
       {
          //cout << "Found box\n";
          BoxObj *box = new BoxObj();
          box->parse(povFile);
-         boxes.push_back(box);
+         geometry.push_back(box);
       } 
       if(token.compare("cone") == 0)
       {
          //cout << "Found cone\n";
          ConeObj *cone = new ConeObj();
          cone->parse(povFile);
-         cones.push_back(cone);
+         geometry.push_back(cone);
       } 
       if(token.compare("plane") == 0)
       {
          //cout << "Found plane\n";
          PlaneObj *plane = new PlaneObj();
          plane->parse(povFile);
-         planes.push_back(plane);
+         geometry.push_back(plane);
       } 
       if(token.compare("triangle") == 0)
       {
          //cout << "Found triangle\n";
          TriangleObj *triangle = new TriangleObj();
          triangle->parse(povFile);
-         triangles.push_back(triangle);
+         geometry.push_back(triangle);
+      } 
+      if(token.compare("//") == 0)
+      {
+         getline(povFile, token);  //swallow comment line
+         //cout << token;
       } 
       //cout << token << endl;
       token = "";
@@ -178,5 +185,10 @@ void printPOV()
    for(unsigned int i = 0; i<triangles.size(); i++)
    {
       cout << "Triangle: " << *triangles[i] << endl;
+   }
+   
+   for(unsigned int i = 0; i<geometry.size(); i++)
+   {
+      cout << *geometry[i] << endl;
    }
 }

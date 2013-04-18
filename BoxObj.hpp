@@ -2,6 +2,7 @@
 #define BOX_H
 
 #include "RayTracerObject.hpp"
+#include "Geometry.hpp"
 #include "PigmentObj.hpp"
 #include "FinishObj.hpp"
 #include "TranslateObj.hpp"
@@ -22,7 +23,7 @@
 using namespace std;
 using namespace glm;
 
-class BoxObj : public RayTracerObject {
+class BoxObj : public Geometry {
   public:
     BoxObj();
     BoxObj(int id);
@@ -31,11 +32,6 @@ class BoxObj : public RayTracerObject {
     friend ostream& operator<< (ostream &out, BoxObj &boxObj);    
     vec3 corner1;
     vec3 corner2;
-    PigmentObj *pObj;
-    FinishObj *fObj;
-    TranslateObj *tObj;
-    ScaleObj *sObj;
-    RotateObj *rObj;
 };
 
 #endif
