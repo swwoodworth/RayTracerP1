@@ -29,7 +29,7 @@ class PlaneObj : public Geometry {
     PlaneObj(int id);
     ~PlaneObj();
     void parse(ifstream &povFile);
-    double intersect(vec3 d, vec3 p_0);
+    bool intersect(vec3 d, vec3 p_0, double* t);
     friend ostream& operator<< (ostream &out, PlaneObj &planeObj);    
     vec3 normal;
     float distance;

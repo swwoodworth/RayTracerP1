@@ -91,7 +91,7 @@ void SphereObj::parse(ifstream &povFile)
    }
 }
 
-double SphereObj::intersect(vec3 d, vec3 p_0)
+bool SphereObj::intersect(vec3 d, vec3 p_0, double* t)
 {
    double a, b, c, discrim, t_1, t_2;
    
@@ -103,15 +103,16 @@ double SphereObj::intersect(vec3 d, vec3 p_0)
 
    discrim = pow(b,2) - 4*a*c;
    if(discrim < 0)
-      return -1.0;
+      return false;
    else
    {
       t_1 = (-b + sqrt(discrim))/2*a;
       t_2 = (-b - sqrt(discrim))/2*a;
       if(std::min(t_1,t_2)>0.0)
-         return std::min(t_1,t_2);
+         *t = std::min(t_1,t_2);
       else 
-         return std::max(t_1,t_2);
+         *t = std::max(t_1,t_2);
+      return true;
    }
 
 }

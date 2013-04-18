@@ -28,7 +28,7 @@ class Geometry : public RayTracerObject {
     Geometry(int id);
     ~Geometry();
     virtual void parse(ifstream &povFile) {cout << "Parse is not implemented for this object" << endl;}; //base class parse function
-    virtual double intersect(vec3 d, vec3 p_0) {return -1.0;};
+    virtual bool intersect(vec3 d, vec3 p_0, double* t) {return false;};
     friend ostream& operator<< (ostream &out, Geometry &gObj) {out << "Not implemented";
                                                                return out;};    
     PigmentObj *pObj;

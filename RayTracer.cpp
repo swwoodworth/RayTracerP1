@@ -24,6 +24,8 @@ void RayTracer::trace()
    vec3 u, v, w, p_0;
    double t, depth;
    vec3 d, s_prime;
+   bool temp;
+   double* addr = &t;
    
    p_0 = (*cameras[0]).location;
          
@@ -77,9 +79,9 @@ void RayTracer::trace()
          
          for(int k = 0; k < (int) geometry.size(); k++)
          {
-            t = (*geometry[k]).intersect(d, p_0);
+            temp = (*geometry[k]).intersect(d, p_0, addr);
             //cout << t << endl;
-            if(t > 0.0 && t < depth)
+            if(temp == true && t > 0.0 && t < depth)
             {
                
                depth = t;
