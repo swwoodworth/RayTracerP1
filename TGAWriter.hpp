@@ -20,10 +20,16 @@ struct Pixel {
 };
 
 class TGAWriter {
-  public:
-   TGAWriter(); //default constructor
-   ~TGAWriter(); //destructor
-   void writeTGA(Pixel *pixels, int screenWidth, int screenHeight);
+   public:
+      Pixel *pixels;
+      int screenWidth;
+      int screenHeight;
+      double max;
+  
+      TGAWriter(int width, int height); //default constructor
+      ~TGAWriter(); //destructor
+      void colorPixel(int pixel, vec3 color);
+      void writeTGA(bool scale);
 };
 
 #endif

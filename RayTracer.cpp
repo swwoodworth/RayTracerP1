@@ -19,7 +19,7 @@ double pixelToWorldY(int in_y) {
 
 void RayTracer::trace()
 {
-   Pixel *pixels = (Pixel*)calloc(screenWidth * screenHeight, sizeof(Pixel));
+   TGAWriter tga(screenWidth, screenHeight);
    float  u_s, v_s, w_s, t, n_dot_l,v_dot_r;
    vec3 u, v, w, p_0, intersect, norm, l_norm, v_norm, r_norm, p_color;
    double depth;
@@ -35,6 +35,7 @@ void RayTracer::trace()
    {
       for (int j = 0; j < screenWidth; j++)
       {
+         p_color = vec3(0.0,0.0,0.0);
          depth = DBL_MAX;
          
          u_s = pixelToWorldX(j);
@@ -84,62 +85,16 @@ void RayTracer::trace()
                   v_dot_r = 1.0;
                   
                v_dot_r = pow(v_dot_r, (float)(1.0/(*(*geometry[k]).fObj).roughness));
-               
-               //cout << (*(*geometry[k]).fObj).roughness << endl;
-                     
+                                    
                //calc color using phong    
                p_color = vec3(((*(*geometry[k]).fObj).diffuse*(*(*geometry[k]).pObj).pigment.x*n_dot_l*(*lights[0]).color.x + (*(*geometry[k]).fObj).ambient*(*(*geometry[k]).pObj).pigment.x*(*lights[0]).color.x + (*(*geometry[k]).fObj).specular*(*(*geometry[k]).pObj).pigment.x*v_dot_r*(*lights[0]).color.x),
                               ((*(*geometry[k]).fObj).diffuse*(*(*geometry[k]).pObj).pigment.y*n_dot_l*(*lights[0]).color.y + (*(*geometry[k]).fObj).ambient*(*(*geometry[k]).pObj).pigment.y*(*lights[0]).color.y + (*(*geometry[k]).fObj).specular*(*(*geometry[k]).pObj).pigment.y*v_dot_r*(*lights[0]).color.y), 
                               ((*(*geometry[k]).fObj).diffuse*(*(*geometry[k]).pObj).pigment.z*n_dot_l*(*lights[0]).color.z + (*(*geometry[k]).fObj).ambient*(*(*geometry[k]).pObj).pigment.z*(*lights[0]).color.z + (*(*geometry[k]).fObj).specular*(*(*geometry[k]).pObj).pigment.z*v_dot_r*(*lights[0]).color.z)); 
-               
-               /*p_color = vec3((*(*geometry[k]).fObj).ambient*(*(*geometry[k]).pObj).pigment.x*(*lights[0]).color.x,
-                              (*(*geometry[k]).fObj).ambient*(*(*geometry[k]).pObj).pigment.y*(*lights[0]).color.y, 
-                              (*(*geometry[k]).fObj).ambient*(*(*geometry[k]).pObj).pigment.z*(*lights[0]).color.z);
-                              
-               p_color = vec3((*(*geometry[k]).fObj).diffuse*(*(*geometry[k]).pObj).pigment.x*n_dot_l*(*lights[0]).color.x,
-                              (*(*geometry[k]).fObj).diffuse*(*(*geometry[k]).pObj).pigment.y*n_dot_l*(*lights[0]).color.y, 
-                              (*(*geometry[k]).fObj).diffuse*(*(*geometry[k]).pObj).pigment.z*n_dot_l*(*lights[0]).color.z);  
-                              
-               p_color = vec3(((*(*geometry[k]).fObj).diffuse*(*(*geometry[k]).pObj).pigment.x*n_dot_l*(*lights[0]).color.x + (*(*geometry[k]).fObj).ambient*(*(*geometry[k]).pObj).pigment.x*(*lights[0]).color.x),
-                              ((*(*geometry[k]).fObj).diffuse*(*(*geometry[k]).pObj).pigment.y*n_dot_l*(*lights[0]).color.y + (*(*geometry[k]).fObj).ambient*(*(*geometry[k]).pObj).pigment.y*(*lights[0]).color.y), 
-                              ((*(*geometry[k]).fObj).diffuse*(*(*geometry[k]).pObj).pigment.z*n_dot_l*(*lights[0]).color.z + (*(*geometry[k]).fObj).ambient*(*(*geometry[k]).pObj).pigment.z*(*lights[0]).color.z)); */
-                              
-               /*pixels[i*(screenWidth) + j].r = (*(*geometry[k]).pObj).pigment.x;
-               pixels[i*(screenWidth) + j].g = (*(*geometry[k]).pObj).pigment.y;
-               pixels[i*(screenWidth) + j].b = (*(*geometry[k]).pObj).pigment.z;*/
-               
-               pixels[i*(screenWidth) + j].r = p_color.x;
-               pixels[i*(screenWidth) + j].g = p_color.y;
-               pixels[i*(screenWidth) + j].b = p_color.z;
-               if (p_color.x > 1.0 || p_color.z > 1.0 || p_color.z > 1.0)
-                  cout << "x ambient (" << (*(*geometry[k]).fObj).ambient*(*(*geometry[k]).pObj).pigment.x*(*lights[0]).color.x << ", " << (*(*geometry[k]).fObj).ambient*(*(*geometry[k]).pObj).pigment.y*(*lights[0]).color.y << ", " << (*(*geometry[k]).fObj).ambient*(*(*geometry[k]).pObj).pigment.z*(*lights[0]).color.z 
-                       << ")\n  diffuse (" << (*(*geometry[k]).fObj).diffuse*(*(*geometry[k]).pObj).pigment.x*n_dot_l*(*lights[0]).color.x << ", " << (*(*geometry[k]).fObj).diffuse*(*(*geometry[k]).pObj).pigment.y*n_dot_l*(*lights[0]).color.y << ", " << (*(*geometry[k]).fObj).diffuse*(*(*geometry[k]).pObj).pigment.z*n_dot_l*(*lights[0]).color.z
-                       << ")\n";
-               
-               //cout << p_color.x << ", " << p_color.y << ", " << p_color.z << endl;
-               
-               /*pixels[i*(screenWidth) + j].r = v_norm.x;
-               pixels[i*(screenWidth) + j].g = v_norm.y;
-               pixels[i*(screenWidth) + j].b = v_norm.z;*/
-               
-               //cout << "color " << (*(*planes[p]).pObj).pigment.x << ", " << (*(*planes[p]).pObj).pigment.y << ", " << (*(*planes[p]).pObj).pigment.z << endl;
             }
          }
-         
-         /*if (pixels[i*(screenWidth) + j].r == 0)
-         {
-            cout << "-";
-         }
-         else
-            cout << "+";*/
-         //d = vec3(i_x, i_y, (*cameras[0]).location.z+1) - (*cameras[0]).location;
-         //cout << d.x << ", " << d.y << ", " << d.z << endl;
+         tga.colorPixel(i*(screenWidth) + j, p_color);
       }
-      //cout << "\n";
    }
    
-   
-   TGAWriter tga;
-   tga.writeTGA(pixels, screenWidth, screenHeight);
-   free(pixels);
+   tga.writeTGA(true);
 }
