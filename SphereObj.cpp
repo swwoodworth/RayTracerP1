@@ -109,10 +109,17 @@ bool SphereObj::intersect(vec3 d, vec3 p_0, float* t)
       t_1 = (-b + sqrt(discrim))/2*a;
       t_2 = (-b - sqrt(discrim))/2*a;
       if(std::min(t_1,t_2)>0.0)
+      {
          *t = std::min(t_1,t_2);
-      else 
+         return true;
+      }  
+      else if (std::max(t_1,t_2)>0.0)
+      {
          *t = std::max(t_1,t_2);
-      return true;
+         return true;
+      }
+      else 
+         return false;
    }
 
 }

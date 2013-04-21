@@ -81,8 +81,11 @@ bool PlaneObj::intersect(vec3 d, vec3 p_0, float* t)
    //cout << dot((p-p_0), normal) << endl;
    //cout << dot(d, normal) << endl;
    *t = dot((p-p_0), normal)/dot(d, normal);
-   //cout << t << endl;
-   return true;
+   //cout << *t << endl;
+   if(*t>0.0)
+      return true;
+   else
+      return false;
 }
 
 vec3 PlaneObj::getNormal(vec3 intersect) 
