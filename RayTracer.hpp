@@ -47,7 +47,8 @@ class RayTracer {
   public:
    RayTracer(); //default constructor
    ~RayTracer(); //destructor
-   void trace();
+   void genRays();
+   vec3 raytrace(vec3 d, vec3 p_0, int level);
    bool isShadowed(vec3 shadowRay, vec3 p_1);
 };
 

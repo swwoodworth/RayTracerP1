@@ -78,7 +78,7 @@ int main(int argc, char* argv[])
    parsePOV(povFile);
    printPOV();
    RayTracer rt;
-   rt.trace();
+   rt.genRays();
    //cout << "I ran!\n";
    return 0;
 }

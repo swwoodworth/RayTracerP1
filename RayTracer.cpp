@@ -17,15 +17,11 @@ double pixelToWorldY(int in_y) {
    return b + (t-b)*(in_y+.5)/screenHeight;
 }
 
-void RayTracer::trace()
+void RayTracer::genRays()
 {
    TGAWriter tga(screenWidth, screenHeight);
-   float  u_s, v_s, w_s, t, n_dot_l,v_dot_r;
-   vec3 u, v, w, p_0, p_1, intersect, shadowRay, norm, l_norm, v_norm, r_norm, p_color;
-   double depth;
-   vec3 d, s_prime;
-   bool temp;
-   float* addr = &t;
+   float  u_s, v_s, w_s;
+   vec3 u, v, w, p_0, p_color, d, s_prime;
    
    p_0 = (*cameras[0]).location;
          
@@ -34,10 +30,7 @@ void RayTracer::trace()
    for (int i = 0; i < screenHeight; i++)
    {
       for (int j = 0; j < screenWidth; j++)
-      {
-         p_color = vec3(0.0,0.0,0.0);
-         depth = DBL_MAX;
-         
+      {         
          u_s = pixelToWorldX(j);
          v_s = pixelToWorldY(i);
          w_s = -1;
@@ -50,65 +43,86 @@ void RayTracer::trace()
          
          d = normalize(s_prime - p_0);
          
-         for(int k = 0; k < (int) geometry.size(); k++)
-         {
-            temp = (*geometry[k]).intersect(d, p_0, addr);
-            //cout << t << endl;
-            if(temp == true && t > 0.0 && t < depth)
-            {
-               
-               depth = t;
-               intersect = vec3(p_0 + (d * t));
-               
-               //geometry normal
-               norm = (*geometry[k]).getNormal(intersect);
-               //normalized light vector
-               l_norm = normalize(vec3((*lights[0]).location-intersect));
-               //view vector
-               v_norm = normalize(-d);
-               
-               // Move the intersect point slightly away from sphere so that it doesn't intersect itself
-               p_1 = vec3((intersect.x + norm.x/25), (intersect.y + norm.y/25), (intersect.z + norm.z/25));
-               
-               shadowRay = normalize((*lights[0]).location - p_1); 
-               if(isShadowed(shadowRay, p_1))
-               {  //set color to ambient
-                  p_color = vec3((*(*geometry[k]).fObj).ambient*(*(*geometry[k]).pObj).pigment.x*(*lights[0]).color.x,
-                                 (*(*geometry[k]).fObj).ambient*(*(*geometry[k]).pObj).pigment.y*(*lights[0]).color.y, 
-                                 (*(*geometry[k]).fObj).ambient*(*(*geometry[k]).pObj).pigment.z*(*lights[0]).color.z);
-               }
-               else
-               {
-                  n_dot_l = dot(norm,l_norm);
-   
-                  if(n_dot_l < 0) //clamp values between zero and 1
-                     n_dot_l = 0;
-                  else if(n_dot_l > 1.0)
-                     n_dot_l = 1.0;
-                     
-                  //reflected vector   
-                  r_norm = normalize(vec3(-1*l_norm.x + 2.0*n_dot_l*norm.x, -1*l_norm.y + 2.0*n_dot_l*norm.y, -1*l_norm.z + 2.0*n_dot_l*norm.z));
-                  v_dot_r = glm::dot(v_norm,r_norm);
-                        
-                  if(v_dot_r < 0) //clamp values between zero and 1
-                     v_dot_r = 0;
-                  else if(v_dot_r > 1.0)
-                     v_dot_r = 1.0;
-                  
-                  v_dot_r = pow(v_dot_r, (float)(1.0/(*(*geometry[k]).fObj).roughness));
-                                    
-                  //calc color using phong    
-                  p_color = vec3(((*(*geometry[k]).fObj).diffuse*(*(*geometry[k]).pObj).pigment.x*n_dot_l*(*lights[0]).color.x + (*(*geometry[k]).fObj).ambient*(*(*geometry[k]).pObj).pigment.x*(*lights[0]).color.x + (*(*geometry[k]).fObj).specular*(*(*geometry[k]).pObj).pigment.x*v_dot_r*(*lights[0]).color.x),
-                                 ((*(*geometry[k]).fObj).diffuse*(*(*geometry[k]).pObj).pigment.y*n_dot_l*(*lights[0]).color.y + (*(*geometry[k]).fObj).ambient*(*(*geometry[k]).pObj).pigment.y*(*lights[0]).color.y + (*(*geometry[k]).fObj).specular*(*(*geometry[k]).pObj).pigment.y*v_dot_r*(*lights[0]).color.y), 
-                                 ((*(*geometry[k]).fObj).diffuse*(*(*geometry[k]).pObj).pigment.z*n_dot_l*(*lights[0]).color.z + (*(*geometry[k]).fObj).ambient*(*(*geometry[k]).pObj).pigment.z*(*lights[0]).color.z + (*(*geometry[k]).fObj).specular*(*(*geometry[k]).pObj).pigment.z*v_dot_r*(*lights[0]).color.z)); 
-               }
-            }
-         }
+         p_color = raytrace(d, p_0, 0);
          tga.colorPixel(i*(screenWidth) + j, p_color);
       }
    }
    
    tga.writeTGA(true);
+}
+
+vec3 RayTracer::raytrace(vec3 d, vec3 p_0, int level)
+{
+   vec3 p_color, intersect, norm, l_norm, v_norm, r_norm, p_1, shadowRay;
+   float t, n_dot_l,v_dot_r, reflect;
+   float* addr = &t;
+   bool temp;
+   double depth = DBL_MAX;
+   
+   p_color = vec3(0.0,0.0,0.0);   
+   for(int k = 0; k < (int) geometry.size(); k++)
+   {
+      temp = (*geometry[k]).intersect(d, p_0, addr);
+      //cout << t << endl;
+      if(temp == true && t > 0.0 && t < depth)
+      {
+         reflect = (*(*geometry[k]).fObj).reflection;
+         depth = t;
+         intersect = vec3(p_0 + (d * t));
+         
+         //geometry normal
+         norm = (*geometry[k]).getNormal(intersect);
+         //normalized light vector
+         l_norm = normalize(vec3((*lights[0]).location-intersect));
+         //view vector
+         v_norm = normalize(-d);
+         
+         // Move the intersect point slightly away from sphere so that it doesn't intersect itself
+         p_1 = vec3((intersect.x + norm.x/25), (intersect.y + norm.y/25), (intersect.z + norm.z/25));
+         
+         shadowRay = normalize((*lights[0]).location - p_1); 
+         if(isShadowed(shadowRay, p_1))
+         {  //set color to ambient
+            p_color = vec3((*(*geometry[k]).fObj).ambient*(*(*geometry[k]).pObj).pigment.x*(*lights[0]).color.x,
+                           (*(*geometry[k]).fObj).ambient*(*(*geometry[k]).pObj).pigment.y*(*lights[0]).color.y, 
+                           (*(*geometry[k]).fObj).ambient*(*(*geometry[k]).pObj).pigment.z*(*lights[0]).color.z);
+         }
+         else
+         {
+            n_dot_l = dot(norm,l_norm);
+
+            if(n_dot_l < 0) //clamp values between zero and 1
+               n_dot_l = 0;
+            else if(n_dot_l > 1.0)
+               n_dot_l = 1.0;
+               
+            //reflected vector   
+            r_norm = normalize(vec3(-1*l_norm.x + 2.0*n_dot_l*norm.x, -1*l_norm.y + 2.0*n_dot_l*norm.y, -1*l_norm.z + 2.0*n_dot_l*norm.z));
+            v_dot_r = glm::dot(v_norm,r_norm);
+                  
+            if(v_dot_r < 0) //clamp values between zero and 1
+               v_dot_r = 0;
+            else if(v_dot_r > 1.0)
+               v_dot_r = 1.0;
+            
+            v_dot_r = pow(v_dot_r, (float)(1.0/(*(*geometry[k]).fObj).roughness));
+                              
+            //calc color using phong    
+            p_color = vec3(((*(*geometry[k]).fObj).diffuse*(*(*geometry[k]).pObj).pigment.x*n_dot_l*(*lights[0]).color.x + (*(*geometry[k]).fObj).ambient*(*(*geometry[k]).pObj).pigment.x*(*lights[0]).color.x + (*(*geometry[k]).fObj).specular*(*(*geometry[k]).pObj).pigment.x*v_dot_r*(*lights[0]).color.x),
+                           ((*(*geometry[k]).fObj).diffuse*(*(*geometry[k]).pObj).pigment.y*n_dot_l*(*lights[0]).color.y + (*(*geometry[k]).fObj).ambient*(*(*geometry[k]).pObj).pigment.y*(*lights[0]).color.y + (*(*geometry[k]).fObj).specular*(*(*geometry[k]).pObj).pigment.y*v_dot_r*(*lights[0]).color.y), 
+                           ((*(*geometry[k]).fObj).diffuse*(*(*geometry[k]).pObj).pigment.z*n_dot_l*(*lights[0]).color.z + (*(*geometry[k]).fObj).ambient*(*(*geometry[k]).pObj).pigment.z*(*lights[0]).color.z + (*(*geometry[k]).fObj).specular*(*(*geometry[k]).pObj).pigment.z*v_dot_r*(*lights[0]).color.z)); 
+         }
+         
+         if(reflect > 0.0 && level < 5)
+         {
+            vec3 newD = d - 2.0f*dot(norm,d)*norm;
+            vec3 newP_0 = intersect;
+            
+            p_color = (reflect)*p_color + (1-reflect)*raytrace(newD,newP_0,level+1);
+         }
+      }
+   }
+   return p_color;
 }
 
 bool RayTracer::isShadowed(vec3 shadowRay, vec3 p_1)

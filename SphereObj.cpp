@@ -49,6 +49,9 @@ void SphereObj::parse(ifstream &povFile)
    char *line2;
    //char *token2;
    
+   cout << "I'm parsing a sphere" << endl;
+
+   
    getline(povFile, line);
    line2 = (char*)line.c_str();
 

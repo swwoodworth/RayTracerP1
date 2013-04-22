@@ -27,7 +27,7 @@ void CameraObj::parse(ifstream &povFile) {
    char *line2;
    //char *token2;
    
-   //cout << "I'm parsing a sphere" << endl;
+   cout << "I'm parsing a camera" << endl;
    
    while(povFile.good()) // check if at eof
    {
