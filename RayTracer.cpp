@@ -133,7 +133,6 @@ bool RayTracer::isShadowed(vec3 shadowRay, vec3 p_1)
 
    //cout << "shadow ray " << shadowRay.x << ", " << shadowRay.y << ", " << shadowRay.z << endl;
    //cout << p_1.x << ", " << p_1.y << ", " << p_1.z << endl;
-   
    for(int k = 0; k < (int) geometry.size(); k++)
    {
       temp = (*geometry[k]).intersect(shadowRay, p_1, addr); 
