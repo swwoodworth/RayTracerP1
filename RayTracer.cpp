@@ -110,7 +110,20 @@ vec3 RayTracer::raytrace(vec3 d, vec3 p_0, int level)
             //calc color using phong    
             p_color = vec3(((*(*geometry[k]).fObj).diffuse*(*(*geometry[k]).pObj).pigment.x*n_dot_l*(*lights[0]).color.x + (*(*geometry[k]).fObj).ambient*(*(*geometry[k]).pObj).pigment.x*(*lights[0]).color.x + (*(*geometry[k]).fObj).specular*(*(*geometry[k]).pObj).pigment.x*v_dot_r*(*lights[0]).color.x),
                            ((*(*geometry[k]).fObj).diffuse*(*(*geometry[k]).pObj).pigment.y*n_dot_l*(*lights[0]).color.y + (*(*geometry[k]).fObj).ambient*(*(*geometry[k]).pObj).pigment.y*(*lights[0]).color.y + (*(*geometry[k]).fObj).specular*(*(*geometry[k]).pObj).pigment.y*v_dot_r*(*lights[0]).color.y), 
-                           ((*(*geometry[k]).fObj).diffuse*(*(*geometry[k]).pObj).pigment.z*n_dot_l*(*lights[0]).color.z + (*(*geometry[k]).fObj).ambient*(*(*geometry[k]).pObj).pigment.z*(*lights[0]).color.z + (*(*geometry[k]).fObj).specular*(*(*geometry[k]).pObj).pigment.z*v_dot_r*(*lights[0]).color.z)); 
+                           ((*(*geometry[k]).fObj).diffuse*(*(*geometry[k]).pObj).pigment.z*n_dot_l*(*lights[0]).color.z + (*(*geometry[k]).fObj).ambient*(*(*geometry[k]).pObj).pigment.z*(*lights[0]).color.z + (*(*geometry[k]).fObj).specular*(*(*geometry[k]).pObj).pigment.z*v_dot_r*(*lights[0]).color.z));
+                           
+            // Gaussian Distribution Specular
+            /*
+            vec3 halfAngle = normalize(l_norm + v_norm);
+            float angleNormalHalf = acos(dot(halfAngle, norm));
+            float exponent = angleNormalHalf / (*(*geometry[k]).fObj).roughness;
+            exponent = -(exponent * exponent);
+            float gaussianTerm = exp(exponent);
+            
+             p_color = vec3(((*(*geometry[k]).fObj).diffuse*(*(*geometry[k]).pObj).pigment.x*n_dot_l*(*lights[0]).color.x + (*(*geometry[k]).fObj).ambient*(*(*geometry[k]).pObj).pigment.x*(*lights[0]).color.x + (*(*geometry[k]).fObj).specular*(*(*geometry[k]).pObj).pigment.x*gaussianTerm*(*lights[0]).color.x),
+                           ((*(*geometry[k]).fObj).diffuse*(*(*geometry[k]).pObj).pigment.y*n_dot_l*(*lights[0]).color.y + (*(*geometry[k]).fObj).ambient*(*(*geometry[k]).pObj).pigment.y*(*lights[0]).color.y + (*(*geometry[k]).fObj).specular*(*(*geometry[k]).pObj).pigment.y*gaussianTerm*(*lights[0]).color.y), 
+                           ((*(*geometry[k]).fObj).diffuse*(*(*geometry[k]).pObj).pigment.z*n_dot_l*(*lights[0]).color.z + (*(*geometry[k]).fObj).ambient*(*(*geometry[k]).pObj).pigment.z*(*lights[0]).color.z + (*(*geometry[k]).fObj).specular*(*(*geometry[k]).pObj).pigment.z*gaussianTerm*(*lights[0]).color.z));
+            */
          }
          
          if(reflect > 0.0 && level < 5)
