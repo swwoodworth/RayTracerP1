@@ -26,7 +26,7 @@ void LightSourceObj::parse(ifstream &povFile) {
    string line;
    char *line2;
    
-   cout << "I'm parsing a light source" << endl;
+   //cout << "I'm parsing a light source" << endl;
    
    getline(povFile, line);
    line2 = (char*)line.c_str();

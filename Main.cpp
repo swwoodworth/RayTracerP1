@@ -189,6 +189,6 @@ void printPOV()
    
    for(unsigned int i = 0; i<geometry.size(); i++)
    {
-      cout << *geometry[i] << endl;
+      //cout << *geometry[i] << endl;
    }
 }
