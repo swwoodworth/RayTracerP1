@@ -35,3 +35,10 @@ void ScaleObj::parse(ifstream &povFile) {
 
    return;
 }
+
+mat4 ScaleObj::getScale() {
+
+   mat4 transformation = glm::scale(mat4(1.0f),scale);
+   return transformation;
+}
+

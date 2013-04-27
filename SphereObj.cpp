@@ -60,38 +60,8 @@ void SphereObj::parse(ifstream &povFile)
    location.z = atof(strtok (NULL,"{ <,>}"));  
    radius = atof(strtok (NULL,"{ <,>}"));  
 
-   while(povFile.good()) // check if at eof
-   {
-      povFile >> token;
-
-      if(token.compare("}") == 0)
-         return; // found end of parameters
-      else if(token.compare("pigment") == 0)
-      {
-         pObj = new PigmentObj();
-         pObj->parse(povFile);
-      }
-      else if(token.compare("finish") == 0)
-      {
-         fObj = new FinishObj();
-         fObj->parse(povFile);
-      }
-      else if(token.compare("translate") == 0)
-      {
-         tObj = new TranslateObj();
-         tObj->parse(povFile);
-      }
-      else if(token.compare("scale") == 0)
-      {
-         sObj = new ScaleObj();
-         sObj->parse(povFile);
-      }
-      else if(token.compare("rotate") == 0)
-      {
-         rObj = new RotateObj();
-         rObj->parse(povFile);
-      }
-   }
+   parseGeometry(povFile);
+   //cout << "yup" << endl;
 }
 
 bool SphereObj::intersect(vec3 d, vec3 p_0, float* t)

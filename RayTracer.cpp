@@ -53,34 +53,41 @@ void RayTracer::genRays()
 
 vec3 RayTracer::raytrace(vec3 d, vec3 p_0, int level)
 {
-   vec3 p_color, intersect, norm, l_norm, v_norm, r_norm, p_1, shadowRay;
+   vec3 intersect, norm, l_norm, v_norm, r_norm, p_1, shadowRay;
    float t, n_dot_l,v_dot_r, reflect;
    float* addr = &t;
    bool temp;
    double depth = DBL_MAX;
-   
-   p_color = vec3(0.0,0.0,0.0);   
+   vec3 p_color = vec3(0.0,0.0,0.0);  
+    
    for(int k = 0; k < (int) geometry.size(); k++)
    {
-      temp = (*geometry[k]).intersect(d, p_0, addr);
-      //cout << t << endl;
+      mat4 m_i = (*geometry[k]).getTransformation();
+      vec3 light  = (*lights[0]).location;//vec3(m_i*vec4((*lights[0]).location,1));
+
+      vec4 d_new = m_i * vec4(d,0);
+      vec4 p_0_new = m_i * vec4(p_0,1);
+      
+      temp = (*geometry[k]).intersect(vec3(d_new), vec3(p_0_new), addr);
       if(temp == true && t > 0.0 && t < depth)
       {
-         reflect = (*(*geometry[k]).fObj).reflection;
          depth = t;
+
+         mat4 m_i_t = transpose(m_i);
+         reflect = (*(*geometry[k]).fObj).reflection;
          intersect = vec3(p_0 + (d * t));
          
          //geometry normal
-         norm = (*geometry[k]).getNormal(intersect);
-         //normalized light vector
-         l_norm = normalize(vec3((*lights[0]).location-intersect));
+         norm = normalize(vec3(m_i* vec4((*geometry[k]).getNormal(intersect),0)));
+         //light vector
+         l_norm = normalize(light-intersect);
          //view vector
-         v_norm = normalize(-d);
+         v_norm = normalize(-vec3(d_new));
          
          // Move the intersect point slightly away from sphere so that it doesn't intersect itself
-         p_1 = vec3((intersect.x + norm.x/25), (intersect.y + norm.y/25), (intersect.z + norm.z/25));
+         p_1 = intersect + norm/25000.0f;
          
-         shadowRay = normalize((*lights[0]).location - p_1); 
+         shadowRay = normalize(light - p_1); 
          if(isShadowed(shadowRay, p_1))
          {  //set color to ambient
             p_color = vec3((*(*geometry[k]).fObj).ambient*(*(*geometry[k]).pObj).pigment.x*(*lights[0]).color.x,
@@ -128,10 +135,13 @@ vec3 RayTracer::raytrace(vec3 d, vec3 p_0, int level)
          
          if(reflect > 0.0 && level < 5)
          {
-            vec3 newD = d - 2.0f*dot(norm,d)*norm;
-            vec3 newP_0 = intersect;
-            
-            p_color = (reflect)*p_color + (1-reflect)*raytrace(newD,newP_0,level+1);
+            vec3 newD = d - 2.0f*dot(norm,vec3(d_new))*norm;
+            vec3 newP_0 = p_1;
+            vec3 reflectedColor = raytrace(newD,newP_0,level+1);
+            if(reflectedColor != vec3(0.0,0.0,0.0))
+            {
+               p_color = (1-reflect)*p_color + (reflect)*raytrace(newD,newP_0,level+1);
+            }
          }
       }
    }
@@ -148,7 +158,14 @@ bool RayTracer::isShadowed(vec3 shadowRay, vec3 p_1)
    //cout << p_1.x << ", " << p_1.y << ", " << p_1.z << endl;
    for(int k = 0; k < (int) geometry.size(); k++)
    {
-      temp = (*geometry[k]).intersect(shadowRay, p_1, addr); 
+      mat4 m_i = (*geometry[k]).getTransformation();
+      
+      vec4 d_new = m_i * vec4(shadowRay,0);
+      vec4 p_0_new = m_i * vec4(p_1,1);
+      
+      temp = (*geometry[k]).intersect(vec3(d_new), vec3(p_0_new), addr);
+      
+      //temp = (*geometry[k]).intersect(shadowRay, p_1, addr); 
       if(temp)
          return true;
    }    

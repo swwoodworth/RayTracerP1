@@ -2,10 +2,12 @@
 
 TranslateObj::TranslateObj() {
    ObjID = -1;
+   translation = vec3(0.0,0.0,0.0);
 }
 
 TranslateObj::TranslateObj(int id) {
    ObjID = id;
+   translation = vec3(0.0,0.0,0.0);
 }
 
 TranslateObj::~TranslateObj() {}
@@ -34,4 +36,10 @@ void TranslateObj::parse(ifstream &povFile) {
    translation.z = atof(strtok (NULL," <,>"));
 
    return;
+}
+
+mat4 TranslateObj::getTranslate(){
+
+   mat4 transformation = translate(mat4(1.0f),translation);
+   return transformation;
 }

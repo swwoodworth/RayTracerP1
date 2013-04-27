@@ -23,6 +23,7 @@ class RotateObj : public RayTracerObject {
     RotateObj(int id);
     ~RotateObj();
     void parse(ifstream &povFile);
+    mat4 getRotate();
     friend ostream& operator<< (ostream &out, RotateObj &rObj);    
     vec3 rotation;
 };

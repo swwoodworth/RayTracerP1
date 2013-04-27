@@ -23,6 +23,7 @@ class ScaleObj : public RayTracerObject {
     ScaleObj(int id);
     ~ScaleObj();
     void parse(ifstream &povFile);
+    mat4 getScale();
     friend ostream& operator<< (ostream &out, ScaleObj &sObj);    
     vec3 scale;
 };

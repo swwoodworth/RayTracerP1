@@ -35,3 +35,15 @@ void RotateObj::parse(ifstream &povFile) {
 
    return;
 }
+
+mat4 RotateObj::getRotate() {
+   mat4 transformation(1.0f);
+   
+   if(rotation.x != 0)
+      transformation = rotate(mat4(1.0f),rotation.x, vec3(1.0,0.0,0.0));
+   else if(rotation.y != 0)
+      transformation = rotate(mat4(1.0f),rotation.y, vec3(0.0,1.0,0.0));
+   else if(rotation.z != 0)
+      transformation = rotate(mat4(1.0f),rotation.z, vec3(0.0,0.0,1.0));
+   return transformation;
+}

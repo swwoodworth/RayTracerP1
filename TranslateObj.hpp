@@ -23,8 +23,10 @@ class TranslateObj : public RayTracerObject {
     TranslateObj(int id);
     ~TranslateObj();
     void parse(ifstream &povFile);
+    mat4 getTranslate();
     friend ostream& operator<< (ostream &out, TranslateObj &tObj);    
     vec3 translation;
+    mat4 transformation;
 };
 
 #endif
