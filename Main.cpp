@@ -36,6 +36,7 @@ vector<Geometry*> geometry;
 
 int screenWidth;
 int screenHeight;
+int shadingMode;
 
 void parsePOV(ifstream &poVFile);
 void printPOV();
@@ -43,9 +44,9 @@ void printPOV();
 
 int main(int argc, char* argv[])
 {
-   if (argc < 5) // Check the value of argc. If not enough parameters have been passed, inform user and exit.
+   if (argc < 6) // Check the value of argc. If not enough parameters have been passed, inform user and exit.
    { 
-        cout << "Usage: RayTracer imageWidth imageHeight -I inputFilename.pov\n" ; // Inform the user of how to use the program
+        cout << "Usage: RayTracer imageWidth imageHeight -I inputFilename.pov shadingMode\n" ; // Inform the user of how to use the program
         return -1;
    }
    
@@ -75,8 +76,14 @@ int main(int argc, char* argv[])
      return -1;
    }
    
+   shadingMode = atoi(argv[5]);
+   if(shadingMode != 1 && shadingMode != 0)
+   {
+      cout << "Invalid shading mode\n";
+      return -1;
+   }
    parsePOV(povFile);
-   printPOV();
+   //printPOV();
    RayTracer rt;
    rt.genRays();
    //cout << "I ran!\n";

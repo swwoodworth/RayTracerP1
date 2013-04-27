@@ -103,34 +103,37 @@ vec3 RayTracer::raytrace(vec3 d, vec3 p_0, int level)
             else if(n_dot_l > 1.0)
                n_dot_l = 1.0;
                
-            //reflected vector   
-            r_norm = normalize(vec3(-1*l_norm.x + 2.0*n_dot_l*norm.x, -1*l_norm.y + 2.0*n_dot_l*norm.y, -1*l_norm.z + 2.0*n_dot_l*norm.z));
-            v_dot_r = glm::dot(v_norm,r_norm);
+            if(shadingMode == 0)  //Phong
+            {
+                  //reflected vector   
+               r_norm = normalize(vec3(-1*l_norm.x + 2.0*n_dot_l*norm.x, -1*l_norm.y + 2.0*n_dot_l*norm.y, -1*l_norm.z + 2.0*n_dot_l*norm.z));
+               v_dot_r = glm::dot(v_norm,r_norm);
                   
-            if(v_dot_r < 0) //clamp values between zero and 1
-               v_dot_r = 0;
-            else if(v_dot_r > 1.0)
-               v_dot_r = 1.0;
+               if(v_dot_r < 0) //clamp values between zero and 1
+                  v_dot_r = 0;
+               else if(v_dot_r > 1.0)
+                  v_dot_r = 1.0;
             
-            v_dot_r = pow(v_dot_r, (float)(1.0/(*(*geometry[k]).fObj).roughness));
+               v_dot_r = pow(v_dot_r, (float)(1.0/(*(*geometry[k]).fObj).roughness));
                               
-            //calc color using phong    
-            p_color = vec3(((*(*geometry[k]).fObj).diffuse*(*(*geometry[k]).pObj).pigment.x*n_dot_l*(*lights[0]).color.x + (*(*geometry[k]).fObj).ambient*(*(*geometry[k]).pObj).pigment.x*(*lights[0]).color.x + (*(*geometry[k]).fObj).specular*(*(*geometry[k]).pObj).pigment.x*v_dot_r*(*lights[0]).color.x),
-                           ((*(*geometry[k]).fObj).diffuse*(*(*geometry[k]).pObj).pigment.y*n_dot_l*(*lights[0]).color.y + (*(*geometry[k]).fObj).ambient*(*(*geometry[k]).pObj).pigment.y*(*lights[0]).color.y + (*(*geometry[k]).fObj).specular*(*(*geometry[k]).pObj).pigment.y*v_dot_r*(*lights[0]).color.y), 
-                           ((*(*geometry[k]).fObj).diffuse*(*(*geometry[k]).pObj).pigment.z*n_dot_l*(*lights[0]).color.z + (*(*geometry[k]).fObj).ambient*(*(*geometry[k]).pObj).pigment.z*(*lights[0]).color.z + (*(*geometry[k]).fObj).specular*(*(*geometry[k]).pObj).pigment.z*v_dot_r*(*lights[0]).color.z));
-                           
-            // Gaussian Distribution Specular - some code from http://www.arcsynthesis.org/gltut/Illumination/Tut11%20Gaussian.html
-            /*
-            vec3 halfAngle = normalize(l_norm + v_norm);
-            float angleNormalHalf = acos(dot(halfAngle, norm));
-            float exponent = angleNormalHalf / (*(*geometry[k]).fObj).roughness;
-            exponent = -(exponent * exponent);
-            float gaussianTerm = exp(exponent);
+               //calc color using phong    
+               p_color = vec3(((*(*geometry[k]).fObj).diffuse*(*(*geometry[k]).pObj).pigment.x*n_dot_l*(*lights[0]).color.x + (*(*geometry[k]).fObj).ambient*(*(*geometry[k]).pObj).pigment.x*(*lights[0]).color.x + (*(*geometry[k]).fObj).specular*(*(*geometry[k]).pObj).pigment.x*v_dot_r*(*lights[0]).color.x),
+                              ((*(*geometry[k]).fObj).diffuse*(*(*geometry[k]).pObj).pigment.y*n_dot_l*(*lights[0]).color.y + (*(*geometry[k]).fObj).ambient*(*(*geometry[k]).pObj).pigment.y*(*lights[0]).color.y + (*(*geometry[k]).fObj).specular*(*(*geometry[k]).pObj).pigment.y*v_dot_r*(*lights[0]).color.y), 
+                              ((*(*geometry[k]).fObj).diffuse*(*(*geometry[k]).pObj).pigment.z*n_dot_l*(*lights[0]).color.z + (*(*geometry[k]).fObj).ambient*(*(*geometry[k]).pObj).pigment.z*(*lights[0]).color.z + (*(*geometry[k]).fObj).specular*(*(*geometry[k]).pObj).pigment.z*v_dot_r*(*lights[0]).color.z));
+            }
+            else if(shadingMode == 1)             // Gaussian Distribution Specular - some code from http://www.arcsynthesis.org/gltut/Illumination/Tut11%20Gaussian.html
+            {     
+               //cout << "gaussian" << endl;
+               vec3 halfAngle = normalize(l_norm + v_norm);
+               float angleNormalHalf = acos(dot(halfAngle, norm));
+               float exponent = angleNormalHalf / (*(*geometry[k]).fObj).roughness;
+               exponent = -(exponent * exponent);
+               float gaussianTerm = exp(exponent);
             
-             p_color = vec3(((*(*geometry[k]).fObj).diffuse*(*(*geometry[k]).pObj).pigment.x*n_dot_l*(*lights[0]).color.x + (*(*geometry[k]).fObj).ambient*(*(*geometry[k]).pObj).pigment.x*(*lights[0]).color.x + (*(*geometry[k]).fObj).specular*(*(*geometry[k]).pObj).pigment.x*gaussianTerm*(*lights[0]).color.x),
-                           ((*(*geometry[k]).fObj).diffuse*(*(*geometry[k]).pObj).pigment.y*n_dot_l*(*lights[0]).color.y + (*(*geometry[k]).fObj).ambient*(*(*geometry[k]).pObj).pigment.y*(*lights[0]).color.y + (*(*geometry[k]).fObj).specular*(*(*geometry[k]).pObj).pigment.y*gaussianTerm*(*lights[0]).color.y), 
-                           ((*(*geometry[k]).fObj).diffuse*(*(*geometry[k]).pObj).pigment.z*n_dot_l*(*lights[0]).color.z + (*(*geometry[k]).fObj).ambient*(*(*geometry[k]).pObj).pigment.z*(*lights[0]).color.z + (*(*geometry[k]).fObj).specular*(*(*geometry[k]).pObj).pigment.z*gaussianTerm*(*lights[0]).color.z));
-            */
+                p_color = vec3(((*(*geometry[k]).fObj).diffuse*(*(*geometry[k]).pObj).pigment.x*n_dot_l*(*lights[0]).color.x + (*(*geometry[k]).fObj).ambient*(*(*geometry[k]).pObj).pigment.x*(*lights[0]).color.x + (*(*geometry[k]).fObj).specular*(*(*geometry[k]).pObj).pigment.x*gaussianTerm*(*lights[0]).color.x),
+                              ((*(*geometry[k]).fObj).diffuse*(*(*geometry[k]).pObj).pigment.y*n_dot_l*(*lights[0]).color.y + (*(*geometry[k]).fObj).ambient*(*(*geometry[k]).pObj).pigment.y*(*lights[0]).color.y + (*(*geometry[k]).fObj).specular*(*(*geometry[k]).pObj).pigment.y*gaussianTerm*(*lights[0]).color.y), 
+                              ((*(*geometry[k]).fObj).diffuse*(*(*geometry[k]).pObj).pigment.z*n_dot_l*(*lights[0]).color.z + (*(*geometry[k]).fObj).ambient*(*(*geometry[k]).pObj).pigment.z*(*lights[0]).color.z + (*(*geometry[k]).fObj).specular*(*(*geometry[k]).pObj).pigment.z*gaussianTerm*(*lights[0]).color.z));
+            }
          }
          
          if(reflect > 0.0 && level < 5)
