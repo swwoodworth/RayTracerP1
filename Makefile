@@ -81,5 +81,8 @@ tar:
 	         RayTracer.hpp RayTracer.cpp \
 	         TGAWriter.hpp TGAWriter.cpp \
 	         simple.pov test1.pov \
+	         simp_cam.pov simple_spec.pov \
+	         simple_reflect.pov simple_reflect2.pov \
+	         valentine2.pov \
 	         glm README.txt \
             Main.cpp Makefile
