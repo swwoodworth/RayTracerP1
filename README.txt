@@ -17,8 +17,6 @@ To Run:
    $ ./RayTracer 640 480 -I simple.pov 0
    
 
-TGA file will be saved in the working directory as output.tga
-
 Working: 
 All features required for Program Part 2 are working. 
 
