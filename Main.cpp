@@ -38,6 +38,8 @@ int screenWidth;
 int screenHeight;
 int shadingMode;
 
+string fileName;
+
 void parsePOV(ifstream &poVFile);
 void printPOV();
 
@@ -55,12 +57,12 @@ int main(int argc, char* argv[])
    
    if ( !screenWidth ) {
       cout << "Invalid image width\n";
-      cout << "Usage: RayTracer imageWidth imageHeight -I inputFilename.pov\n" ; // Inform the user of how to use the program
+      cout << "Usage: RayTracer imageWidth imageHeight -I inputFilename.pov shadingMode\n" ; // Inform the user of how to use the program
       return -1;
    }
    if ( !screenHeight) {
       cout << "Invalid image height\n";
-      cout << "Usage: RayTracer imageWidth imageHeight -I inputFilename.pov\n" ; // Inform the user of how to use the program
+      cout << "Usage: RayTracer imageWidth imageHeight -I inputFilename.pov shadingMode\n" ; // Inform the user of how to use the program
       return -1;
    }
    if(screenHeight > 1440 || screenWidth > 1440)
@@ -69,6 +71,10 @@ int main(int argc, char* argv[])
       return -1;
    }
 
+   string tempFile = argv[4];
+   fileName = tempFile.substr(0, tempFile.length() - 3) + "tga";
+   cout << fileName;
+   
    ifstream povFile ( argv[4] ); 
    if ( !povFile.is_open() ) 
    {

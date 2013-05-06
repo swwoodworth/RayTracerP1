@@ -15,6 +15,9 @@
 using namespace std;
 using namespace glm;
 
+extern string fileName;
+
+
 struct Pixel {
    float r, g, b;
 };
