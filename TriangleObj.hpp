@@ -29,6 +29,8 @@ class TriangleObj : public Geometry {
     TriangleObj(int id);
     ~TriangleObj();
     void parse(ifstream &povFile);
+    bool intersect(vec3 d, vec3 p_0, float* t);
+    vec3 getNormal(vec3 intersect);
     friend ostream& operator<< (ostream &out, TriangleObj &triObj);    
     vec3 corner1;
     vec3 corner2;

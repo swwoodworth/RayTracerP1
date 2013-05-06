@@ -43,7 +43,7 @@ void RayTracer::genRays()
          
          d = normalize(s_prime - p_0);
          
-         p_color = raytrace(d, p_0, 0);
+         p_color = raytrace(d, p_0, 0, 0, 1);
          tga.colorPixel(i*(screenWidth) + j, p_color);
       }
    }
@@ -51,10 +51,10 @@ void RayTracer::genRays()
    tga.writeTGA(true);
 }
 
-vec3 RayTracer::raytrace(vec3 d, vec3 p_0, int level)
+vec3 RayTracer::raytrace(vec3 d, vec3 p_0, int reflectDepth, int refractDepth, float indexOfRefract)
 {
    vec3 intersect, norm, l_norm, v_norm, r_norm, p_1, shadowRay;
-   float t, n_dot_l,v_dot_r, reflect;
+   float t, n_dot_l,v_dot_r, reflect, refract;
    float* addr = &t;
    bool temp;
    double depth = DBL_MAX;
@@ -65,16 +65,17 @@ vec3 RayTracer::raytrace(vec3 d, vec3 p_0, int level)
       mat4 m_i = (*geometry[k]).getTransformation();
       vec3 light  = (*lights[0]).location;//vec3(m_i*vec4((*lights[0]).location,1));
 
-      vec4 d_new = m_i * vec4(d,0);
-      vec4 p_0_new = m_i * vec4(p_0,1);
+      vec3 d_new = vec3(m_i * vec4(d,0));
+      vec3 p_0_new = vec3(m_i * vec4(p_0,1));
       
-      temp = (*geometry[k]).intersect(vec3(d_new), vec3(p_0_new), addr);
+      temp = (*geometry[k]).intersect(d_new, p_0_new, addr);
       if(temp == true && t > 0.0 && t < depth)
       {
          depth = t;
 
          mat4 m_i_t = transpose(m_i);
          reflect = (*(*geometry[k]).fObj).reflection;
+         refract = (*(*geometry[k]).fObj).refraction;
          intersect = vec3(p_0 + (d * t));
          
          //geometry normal
@@ -82,7 +83,7 @@ vec3 RayTracer::raytrace(vec3 d, vec3 p_0, int level)
          //light vector
          l_norm = normalize(light-intersect);
          //view vector
-         v_norm = normalize(-vec3(d_new));
+         v_norm = normalize(-d_new);
          
          // Move the intersect point slightly away from sphere so that it doesn't intersect itself
          p_1 = intersect + norm/25000.0f;
@@ -136,14 +137,27 @@ vec3 RayTracer::raytrace(vec3 d, vec3 p_0, int level)
             }
          }
          
-         if(reflect > 0.0 && level < 5)
+         if(refract > 0.0 && refractDepth < 5)
          {
-            vec3 newD = d - 2.0f*dot(norm,vec3(d_new))*norm;
+            vec3 refractT;
+            bool success = false;
+            bool* successAddr = &success;
+
+            
+            if(dot(d_new, norm) < 0)
+            {
+               refractT = refractRay(d_new, norm, (*(*geometry[k]).fObj).ior, indexOfRefract, successAddr);
+            }
+         }
+         
+         if(reflect > 0.0 && reflectDepth < 5)
+         {
+            vec3 newD = d_new - 2.0f*dot(norm,d_new)*norm;
             vec3 newP_0 = p_1;
-            vec3 reflectedColor = raytrace(newD,newP_0,level+1);
+            vec3 reflectedColor = raytrace(newD,newP_0,reflectDepth+1, refractDepth, indexOfRefract);
             if(reflectedColor != vec3(0.0,0.0,0.0))
             {
-               p_color = (1-reflect)*p_color + (reflect)*raytrace(newD,newP_0,level+1);
+               p_color = (1-reflect)*p_color + (reflect)*raytrace(newD,newP_0,reflectDepth+1, refractDepth, indexOfRefract);
             }
          }
       }
@@ -163,15 +177,33 @@ bool RayTracer::isShadowed(vec3 shadowRay, vec3 p_1)
    {
       mat4 m_i = (*geometry[k]).getTransformation();
       
-      vec4 d_new = m_i * vec4(shadowRay,0);
-      vec4 p_0_new = m_i * vec4(p_1,1);
+      vec3 d_new = vec3(m_i * vec4(shadowRay,0));
+      vec3 p_0_new = vec3(m_i * vec4(p_1,1));
       
-      temp = (*geometry[k]).intersect(vec3(d_new), vec3(p_0_new), addr);
+      temp = (*geometry[k]).intersect(d_new, p_0_new, addr);
       
       //temp = (*geometry[k]).intersect(shadowRay, p_1, addr); 
       if(temp)
          return true;
    }    
    return false;       
+}
+
+vec3 RayTracer::refractRay(vec3 d, vec3 norm, float n_2, float n_1, bool* success)
+{
+   vec3 t;
+   
+   float inner = 1 - pow((n_1/n_2), 2) * (1 - pow(dot(d,norm),2));
+   if(inner >= 0)
+   {
+      *success = true;
+      t = n_1/n_2*(d-norm*dot(d,norm))-norm*sqrt(inner);
+   }
+   else
+   {
+      *success = false;
+   }
+   
+   return t;
 }
 
