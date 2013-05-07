@@ -49,7 +49,7 @@ class RayTracer {
    RayTracer(); //default constructor
    ~RayTracer(); //destructor
    void genRays();
-   vec3 raytrace(vec3 d, vec3 p_0, int reflectDepth, int refractDepth, float indexOfRefract);
+   vec3 raytrace(vec3 d, vec3 p_0, int reflectDepth, int refractDepth,   vector<float> indexOfRefract, vector<int> refractStack);
    bool isShadowed(vec3 shadowRay, vec3 p_1);
    vec3 refractRay(vec3 d, vec3 norm, float n_2, float n_1, bool* success);
 };

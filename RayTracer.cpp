@@ -43,7 +43,11 @@ void RayTracer::genRays()
          
          d = normalize(s_prime - p_0);
          
-         p_color = raytrace(d, p_0, 0, 0, 1);
+         vector<float> ior;
+         ior.push_back(1.0);
+         vector<int> refractStack;
+         refractStack.push_back(-1);
+         p_color = raytrace(d, p_0, 0, 0, ior, refractStack);
          tga.colorPixel(i*(screenWidth) + j, p_color);
       }
    }
@@ -51,7 +55,7 @@ void RayTracer::genRays()
    tga.writeTGA(true);
 }
 
-vec3 RayTracer::raytrace(vec3 d, vec3 p_0, int reflectDepth, int refractDepth, float indexOfRefract)
+vec3 RayTracer::raytrace(vec3 d, vec3 p_0, int reflectDepth, int refractDepth, vector<float> indexOfRefract, vector<int> refractStack)
 {
    vec3 intersect, norm, l_norm, v_norm, r_norm, p_1, p_2, shadowRay;
    float t, n_dot_l,v_dot_r, reflect, refract;
@@ -145,21 +149,35 @@ vec3 RayTracer::raytrace(vec3 d, vec3 p_0, int reflectDepth, int refractDepth, f
             vec3 refractT;
             bool success = false;
             bool* successAddr = &success;
-            float cos_theta, R_0, R;
+            float cos_theta, R_0, R, n1, n2;
             
-            float n2 = (*(*geometry[k]).fObj).ior;
 
             vec3 newD = d_new - 2.0f*dot(norm,d_new)*norm;
-            vec3 reflectedColor = raytrace(newD,p_1,reflectDepth+1, refractDepth, indexOfRefract);
+            vec3 reflectedColor = raytrace(newD,p_1,reflectDepth+1, refractDepth, indexOfRefract, refractStack);
+            
+            if(refractStack.back() == (k+1))
+            {
+               n1 = indexOfRefract.back();
+               indexOfRefract.pop_back();
+               refractStack.pop_back();
+               n2 = indexOfRefract.back();
+            }
+            else
+            {
+               n1 = indexOfRefract.back();
+               n2 = (*(*geometry[k]).fObj).ior;
+               indexOfRefract.push_back((*(*geometry[k]).fObj).ior);
+               refractStack.push_back(k+1);
+            }
             
             if(dot(d_new, norm) < 0)
             {
-               refractT = refractRay(d_new, norm, n2, indexOfRefract, successAddr);
+               refractT = refractRay(d_new, norm, n1, n2, successAddr);
                cos_theta = dot(d, -norm);
             }
             else
             {
-               refractT = refractRay(d_new, -norm, indexOfRefract, n2, successAddr);
+               refractT = refractRay(d_new, -norm, n1, n2, successAddr);
                if(success == true)
                {
                   cos_theta = dot(d, norm);
@@ -172,12 +190,12 @@ vec3 RayTracer::raytrace(vec3 d, vec3 p_0, int reflectDepth, int refractDepth, f
             
             if(success == true)
             {
-               R_0 = pow((n2 - indexOfRefract), 2)/pow((n2 +  indexOfRefract),2);
+               R_0 = pow((n2 - n1), 2)/pow((n2 +  n1),2);
                R = R_0 + (1-R_0)*pow((1-cos_theta),5);
             
                p_2 = intersect + refractT/25000.0f;
-
-               p_color = R*reflectedColor + (1-R)*raytrace(refractT,p_2,reflectDepth+1, refractDepth+1, n2);
+               
+               p_color = R*reflectedColor + (1-R)*raytrace(refractT,p_2,reflectDepth, refractDepth+1, indexOfRefract, refractStack);
             }
          }
          
@@ -185,10 +203,10 @@ vec3 RayTracer::raytrace(vec3 d, vec3 p_0, int reflectDepth, int refractDepth, f
          {
             vec3 newD = d_new - 2.0f*dot(norm,d_new)*norm;
             vec3 newP_0 = p_1;
-            vec3 reflectedColor = raytrace(newD,newP_0,reflectDepth+1, refractDepth, indexOfRefract);
+            vec3 reflectedColor = raytrace(newD,newP_0,reflectDepth+1, refractDepth, indexOfRefract, refractStack);
             if(reflectedColor != vec3(0.0,0.0,0.0))
             {
-               p_color = (1-reflect)*p_color + (reflect)*raytrace(newD,newP_0,reflectDepth+1, refractDepth, indexOfRefract);
+               p_color = (1-reflect)*p_color + (reflect)*raytrace(newD,newP_0,reflectDepth+1, refractDepth, indexOfRefract, refractStack);
             }
          }
       }
