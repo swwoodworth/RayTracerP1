@@ -146,7 +146,7 @@ vec3 TriangleObj::getNormal(vec3 intersect)
 {
    vec3 temp = glm::cross(corner1 - corner2, corner2 - corner3);
    temp = normalize(temp);
-   cout << temp.x << ", " << temp.y << ", " << temp.z << endl;
+   //cout << temp.x << ", " << temp.y << ", " << temp.z << endl;
    return normalize(temp);
 }
 

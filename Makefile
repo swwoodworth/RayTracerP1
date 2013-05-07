@@ -85,4 +85,5 @@ tar:
 	         simple_reflect.pov simple_reflect2.pov \
 	         valentine2.pov \
 	         glm README.txt \
+	         *.tga \
             Main.cpp Makefile
