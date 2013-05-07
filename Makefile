@@ -3,8 +3,8 @@ OBJS = Main.o RayTracerObject.o CameraObj.o LightSourceObj.o TranslateObj.o \
        ConeObj.o PlaneObj.o TriangleObj.o Geometry.o RayTracer.o TGAWriter.o
 CC = g++
 DEBUG = -g
-CFLAGS = -Wall -c $(DEBUG)
-LFLAGS = -Wall $(DEBUG)
+CFLAGS = -O2 -Wall -Werror -c $(DEBUG)
+LFLAGS = -O2 -Wall -Werror $(DEBUG)
 
 RayTracer : $(OBJS)
 	$(CC) $(LFLAGS) $(OBJS) -o RayTracer
