@@ -54,6 +54,46 @@ void TriangleObj::parse(ifstream &povFile) {
 }
 
 bool TriangleObj::intersect(vec3 d, vec3 p_0, float* t)
+{  
+   //cout << "intersect" << endl;
+   float a = corner1.x - corner2.x;
+   float b = corner1.y - corner2.y;
+   float c = corner1.z - corner2.z;
+   
+   float d1 = corner1.x - corner3.x;
+   float e = corner1.y - corner3.y;
+   float f = corner1.z - corner3.z;
+   
+   float g = d.x;
+   float h = d.y;
+   float i = d.z;
+   
+   float j = corner1.x - p_0.x;
+   float k = corner1.y - p_0.y;
+   float l = corner1.z - p_0.z;
+   
+   float M = a*(e*i - h*f) + b*(g*f - d1*i) + c*(d1*h - e*g);
+   
+   *t = -(f*(a*k - j*b) + e*(j*c - a*l) + d1*(b*l - k*c))/M;
+   
+   if(*t <= 0)
+      return false;
+   //cout << "past t" << endl;
+   float gamma = (i*(a*k - j*b) + h*(j*c - a*l) + g*(b*l - k*c))/M;
+   
+   if (gamma < 0 || gamma > 1)
+      return false;
+   //cout << "past gamma" << endl;
+
+   float beta = (j*(e*i - h*f) + k*(g*f - d1*i) + l*(d1*h - e*g))/M;
+   
+   if (beta < 0 || beta > 1 - gamma)
+      return false;
+   
+   return true;  
+}
+
+/*bool TriangleObj::intersect(vec3 d, vec3 p_0, float* t)
 {
    float beta, gamma; //alpha
    mat3 alphaDet, betaDet, gammaDet, alphaInverse;
@@ -100,11 +140,13 @@ bool TriangleObj::intersect(vec3 d, vec3 p_0, float* t)
    else 
       return false;
    
-}
+}*/
 
 vec3 TriangleObj::getNormal(vec3 intersect) 
 {
-   vec3 temp = glm::cross(corner2 - corner1, corner3 - corner1);
+   vec3 temp = glm::cross(corner1 - corner2, corner2 - corner3);
+   temp = normalize(temp);
+   cout << temp.x << ", " << temp.y << ", " << temp.z << endl;
    return normalize(temp);
 }
 

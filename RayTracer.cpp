@@ -67,10 +67,13 @@ vec3 RayTracer::raytrace(vec3 d, vec3 p_0, int reflectDepth, int refractDepth, f
 
       vec3 d_new = vec3(m_i * vec4(d,0));
       vec3 p_0_new = vec3(m_i * vec4(p_0,1));
-      
+      //cout << k << endl;
       temp = (*geometry[k]).intersect(d_new, p_0_new, addr);
+      /*if (temp == true && k != 4 )
+         cout << t << endl;*/
       if(temp == true && t > 0.0 && t < depth)
       {
+         //cout << "in" << endl;
          depth = t;
 
          mat4 m_i_t = transpose(m_i);

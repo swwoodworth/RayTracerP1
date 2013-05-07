@@ -59,6 +59,8 @@ bool PlaneObj::intersect(vec3 d, vec3 p_0, float* t)
 
 vec3 PlaneObj::getNormal(vec3 intersect) 
 {
+   //cout << "plane" << normal.x << ", " << normal.y << ", " << normal.z << endl;
+
    return normalize(normal);
 }
 
