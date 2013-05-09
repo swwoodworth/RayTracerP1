@@ -16,9 +16,31 @@ To Run:
    $ make
    $ ./RayTracer 640 480 -I simple.pov 0
    
+Times:  (average of 3 runs)
+   recurse_simp = 3.7 sec
+   recurse_simp2 = 5.6 sec
+   ugly_part = 2.4 sec
+   simple_refract = .42 sec
+   simple_tri = .37 sec
+   program3 = 1.2 sec
+   
 
 Working: 
-All features required for Program Part 2 are working. 
+It appears that most of the things from part 3 are fully functional, with a 
+couple of exceptions.
+
+As you can see in recurse_simp and recurse_simp2, there are some strange 
+lighter areas. I believe that this may simply be an implementation 
+difference that we have chosen. This occurs when a refracted or reflected ray 
+does not hit anything and therefore returns nothing. You can choose to
+color the object based on the things it did hit or color not add any additional
+color.
+
+The second exception can be seen in recurse_simp. My reflections are not in the
+same place as you example images. I beleive I may be reflecting my rays wrong.
+I will be talking to you in your office hours tomorrow about this.
+
+My custom image is called program3.pov
 
 Notes:
 There appears to be some floating point error on my machine on the 

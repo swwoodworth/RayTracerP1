@@ -83,3 +83,9 @@ tar:
 	         glm README.txt \
 	         *.pov *.tga \
             Main.cpp Makefile
+            
+tarImage:
+	tar cfv images.tar *.tga
+	
+tarImage:
+	tar cfv povray.tar *.pov

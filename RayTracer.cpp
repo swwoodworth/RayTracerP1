@@ -63,7 +63,8 @@ vec3 RayTracer::raytrace(vec3 d, vec3 p_0, int reflectDepth, int refractDepth)
    for(int k = 0; k < (int) geometry.size(); k++)
    {
       mat4 m_i = geometry[k]->getTransformation();
-      vec3 light  = lights[0]->location;//vec3(m_i*vec4((*lights[0]).location,1));
+      mat4 m = inverse(m_i);
+      vec3 light  = vec3(m_i*vec4(lights[0]->location,1));  //lights[0]->location;//vec3(m_i*vec4((*lights[0]).location,1));
 
       vec3 d_new = vec3(m_i * vec4(d,0));
       vec3 p_0_new = vec3(m_i * vec4(p_0,1));
@@ -77,23 +78,29 @@ vec3 RayTracer::raytrace(vec3 d, vec3 p_0, int reflectDepth, int refractDepth)
          depth = t;
 
          mat4 m_i_t = transpose(m_i);
+         
          reflect = geometry[k]->fObj->reflection;
          refract = geometry[k]->fObj->refraction;
          refractVal = geometry[k]->pObj->pigment.w;
          
-         intersect = vec3(p_0 + (d * t));
-         
+         intersect = vec3(p_0_new + (d_new * t));
+
          //geometry normal
-         norm = normalize(vec3(m_i* vec4(geometry[k]->getNormal(intersect),0)));
+         norm = vec3(m_i_t*vec4(normalize(geometry[k]->getNormal(intersect)), 0));
+
          //light vector
          l_norm = normalize(light-intersect);
          //view vector
          v_norm = normalize(-d_new);
          
-         // Move the intersect point slightly away from sphere so that it doesn't intersect itself
-         p_1 = intersect + norm/25000.0f;
+         shadowRay = normalize(light - intersect); 
+         // Move the intersect point slightly away so that it doesn't intersect itself
+         //p_1 = intersect + shadowRay/2500.0f;
+         p_1 = intersect + norm/2500.0f;
          
-         shadowRay = normalize(light - p_1); 
+         shadowRay = vec3(m*vec4(shadowRay,0));
+         p_1 = vec3(m*vec4(p_1,1));
+
          if(isShadowed(shadowRay, p_1))
          {  //set color to ambient
             p_color = vec3(geometry[k]->fObj->ambient*geometry[k]->pObj->pigment.x*lights[0]->color.x,
@@ -152,8 +159,14 @@ vec3 RayTracer::raytrace(vec3 d, vec3 p_0, int reflectDepth, int refractDepth)
             
 
             vec3 newD = d_new - 2.0f*dot(norm,d_new)*norm;
-            vec3 reflectedColor = raytrace(newD,p_1,reflectDepth+1, refractDepth);
-            
+            vec3 p_3 = intersect + newD/2500.0f;
+            newD = vec3(m*vec4(newD, 0));
+            p_3 = vec3(m*vec4(p_3, 1));
+            vec3 reflectedColor = raytrace(newD,p_3,reflectDepth+1, refractDepth);
+            if(reflectedColor == vec3(0.0,0.0,0.0))
+            {
+               reflectedColor = p_color;
+            }
             
             n2 = 1;
             n1 = geometry[k]->fObj->ior;
@@ -187,19 +200,23 @@ vec3 RayTracer::raytrace(vec3 d, vec3 p_0, int reflectDepth, int refractDepth)
             }*/
             if(success == true)
             {
-               p_2 = intersect + refractT/25000.0f;
+               p_2 = intersect + refractT/2500.0f;
+               refractT = vec3(m*vec4(refractT,0));
+               p_2 = vec3(m*vec4(p_2,1));
                p_color = (1-reflect-refractVal)*p_color + reflect*reflectedColor + refractVal*raytrace(refractT,p_2,reflectDepth, refractDepth+1);
             }
          }
          
-         else if(reflect > 0.0 && reflectDepth < 5)
+         if(reflect > 0.0 && reflectDepth < 5)
          {
             vec3 newD = d_new - 2.0f*dot(norm,d_new)*norm;
-            vec3 newP_0 = p_1;
-            vec3 reflectedColor = raytrace(newD,newP_0,reflectDepth+1, refractDepth);
+            vec3 p_3 = intersect + newD/2500.0f;
+            newD = vec3(m*vec4(newD, 0));
+            p_3 = vec3(m*vec4(p_3, 1));
+            vec3 reflectedColor = raytrace(newD,p_3,reflectDepth+1, refractDepth);
             if(reflectedColor != vec3(0.0,0.0,0.0))
             {
-               p_color = (1-reflect)*p_color + (reflect)*raytrace(newD,newP_0,reflectDepth+1, refractDepth);
+               p_color = (1-reflect)*p_color + (reflect)*reflectedColor;
             }
          }
       }
@@ -209,7 +226,7 @@ vec3 RayTracer::raytrace(vec3 d, vec3 p_0, int reflectDepth, int refractDepth)
 
 bool RayTracer::isShadowed(vec3 shadowRay, vec3 p_1)
 {
-   bool temp;
+   bool temp = false;
    float t;
    float* addr = &t;
 
@@ -224,7 +241,6 @@ bool RayTracer::isShadowed(vec3 shadowRay, vec3 p_1)
       
       temp = geometry[k]->intersect(d_new, p_0_new, addr);
       
-      //temp = (*geometry[k]).intersect(shadowRay, p_1, addr); 
       if(temp)
          return true;
    }    

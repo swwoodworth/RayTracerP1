@@ -42,9 +42,7 @@ void PlaneObj::parse(ifstream &povFile) {
 
 bool PlaneObj::intersect(vec3 d, vec3 p_0, float* t)
 {
-   vec3 p;
-   
-   p = (normal / length(normal)) * distance;
+   vec3 p = (normal / length(normal)) * distance;
    //cout << p.x << ", " << p.y << ", " << p.z << endl;
    
    //cout << dot((p-p_0), normal) << endl;
