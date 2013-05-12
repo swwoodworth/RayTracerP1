@@ -24,13 +24,13 @@ class FinishObj : public RayTracerObject {
     ~FinishObj();
     void parse(ifstream &povFile);
     friend ostream& operator<< (ostream &out, FinishObj &fObj);    
-    double ambient;
-    double diffuse;
-    double specular;
-    double roughness;
-    double reflection;
-    double refraction;
-    double ior;
+    float ambient;
+    float diffuse;
+    float specular;
+    float roughness;
+    float reflection;
+    float refraction;
+    float ior;
 };
 
 #endif

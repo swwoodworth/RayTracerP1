@@ -50,7 +50,7 @@ class RayTracer {
    ~RayTracer(); //destructor
    void genRays();
    vec3 raytrace(vec3 d, vec3 p_0, int reflectDepth, int refractDepth);
-   bool isShadowed(vec3 shadowRay, vec3 p_1);
+   bool isShadowed(vec3 shadowRay, vec3 p_1, float distance);
    vec3 refractRay(vec3 d, vec3 norm, float n_1, float n_2, bool* success);
 };
 

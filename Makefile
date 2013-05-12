@@ -87,5 +87,5 @@ tar:
 tarImage:
 	tar cfv images.tar *.tga
 	
-tarImage:
+tarPOV:
 	tar cfv povray.tar *.pov
