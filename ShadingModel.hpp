@@ -1,7 +1,5 @@
-#ifndef RAYT_H
-#define RAYT_H
-
-#include "TGAWriter.hpp"
+#ifndef SHADE_H
+#define SHADE_H
 
 #include "CameraObj.hpp"
 #include "LightSourceObj.hpp"
@@ -11,12 +9,15 @@
 #include "ConeObj.hpp"
 #include "PlaneObj.hpp"
 #include "TriangleObj.hpp"
-#include "ShadingModel.hpp"
+
+#include "RayTracerObject.hpp"
+#include "Geometry.hpp"
+#include "PigmentObj.hpp"
+#include "FinishObj.hpp"
 
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <vector>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -24,9 +25,6 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp" //perspective, trans etc
 #include "glm/gtc/type_ptr.hpp" //value_ptr
-
-using namespace std;
-using namespace glm;
 
 extern vector<CameraObj*> cameras;
 extern vector<LightSourceObj*> lights;
@@ -39,20 +37,15 @@ extern vector<TriangleObj*> triangles;
 
 extern vector<Geometry*> geometry;
 
+using namespace std;
+using namespace glm;
 
-extern int screenWidth;
-extern int screenHeight;
-extern int shadingMode;
-
-class RayTracer {
+class ShadingModel {
   public:
-   RayTracer(); //default constructor
-   ~RayTracer(); //destructor
-   void genRays();
-   vec3 raytrace(vec3 d, vec3 p_0, int reflectDepth, int refractDepth);
-   int findClosest(vec3 p_0, vec3 d);
-   bool isShadowed(vec3 shadowRay, vec3 p_1, float distance);
-   vec3 refractRay(vec3 d, vec3 norm, float n_1, float n_2, bool* success);
+    ShadingModel();
+    ~ShadingModel();
+    vec3 phong(vec3 norm, vec3 l_norm, vec3 v_norm, int k, int l);
+    vec3 gaussian(vec3 norm, vec3 l_norm, vec3 v_norm, int k, int l);
 };
 
 #endif

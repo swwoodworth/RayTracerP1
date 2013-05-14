@@ -1,4 +1,4 @@
-OBJS = Main.o RayTracerObject.o CameraObj.o LightSourceObj.o TranslateObj.o \
+OBJS = Main.o RayTracerObject.o ShadingModel.o CameraObj.o LightSourceObj.o TranslateObj.o \
        ScaleObj.o RotateObj.o PigmentObj.o FinishObj.o SphereObj.o BoxObj.o \
        ConeObj.o PlaneObj.o TriangleObj.o Geometry.o RayTracer.o TGAWriter.o
 CC = g++
@@ -11,6 +11,9 @@ RayTracer : $(OBJS)
 	
 Main.o : Main.cpp
 	$(CC) $(CFLAGS) Main.cpp
+	
+ShadingModel.o : ShadingModel.hpp ShadingModel.cpp
+	$(CC) $(CFLAGS) ShadingModel.cpp
 
 RayTracerObject.o : RayTracerObject.hpp RayTracerObject.cpp
 	$(CC) $(CFLAGS) RayTracerObject.cpp
@@ -65,6 +68,7 @@ clean:
 
 tar:
 	tar cfv rayTracer.tar RayTracerObject.hpp RayTracerObject.cpp \
+	         ShadingModel.hpp ShadingModel.cpp \
 	         CameraObj.hpp CameraObj.cpp \
 	         LightSourceObj.hpp LightSourceObj.cpp \
 	         TranslateObj.hpp TranslateObj.cpp \
