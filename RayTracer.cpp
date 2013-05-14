@@ -68,7 +68,6 @@ vec3 RayTracer::raytrace(vec3 d, vec3 p_0, int reflectDepth, int refractDepth)
    else
    {
       mat4 m_i = geometry[k]->getTransformation();
-      //mat4 m = inverse(m_i);      
 
       vec3 d_new = vec3(m_i * vec4(d,0));
       vec3 p_0_new = vec3(m_i * vec4(p_0,1));
@@ -104,13 +103,8 @@ vec3 RayTracer::raytrace(vec3 d, vec3 p_0, int reflectDepth, int refractDepth)
             vec3 light = lights[l]->location;
             //light vector
             l_norm = normalize(light - intersect);
-            //if(k == 1)
-            //  cout << l_norm.x << ", " << l_norm.y << ", " << l_norm.z << endl;
-            //l_norm = normalize(intersect - light);
+           
             shadowRay = normalize(light - p_1); 
-
-            //shadowRay = vec3(m*vec4(shadowRay,0));
-            //p_1 = vec3(m*vec4(p_1,1));
 
             float distance = length(light - p_1);
             if(isShadowed(shadowRay, p_1, distance)) //set color to ambient
@@ -187,7 +181,7 @@ vec3 RayTracer::raytrace(vec3 d, vec3 p_0, int reflectDepth, int refractDepth)
             }
          }
       
-         if(reflect > 0.0 && reflectDepth < 5)
+         else if(reflect > 0.0 && reflectDepth < 5)
          {
             vec3 newD = d - 2.0f*dot(norm,d)*norm;
             vec3 p_3 = intersect + newD/2500.0f;
