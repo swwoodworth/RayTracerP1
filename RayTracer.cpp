@@ -60,17 +60,15 @@ vec3 RayTracer::raytrace(vec3 d, vec3 p_0, int reflectDepth, int refractDepth)
    bool temp;
    double depth = DBL_MAX;
    vec3 p_color = vec3(0.0,0.0,0.0);  
-   vec3 t_color = vec3(0.0,0.0,0.0);  
     
-   //for (int l = 0; l <  (int) lights.size(); l++)
-   for (int l = 0; l <  (int) lights.size(); l++)
-   {
-      vec3 light  = lights[l]->location;   //vec3(m_i*vec4((*lights[0]).location,1));
 
       //cout << l << endl;
       p_color = vec3(0.0,0.0,0.0);  
       depth = DBL_MAX;
-      for(int k = 0; k < (int) geometry.size(); k++)
+      int k = findClosest(p_0, d);
+      if(k==-1)
+         return p_color;
+      else
       {
          mat4 m_i = geometry[k]->getTransformation();
          //mat4 m = inverse(m_i);      
@@ -97,71 +95,75 @@ vec3 RayTracer::raytrace(vec3 d, vec3 p_0, int reflectDepth, int refractDepth)
             //if(k == 1)
             //  cout << norm.x << ", " << norm.y << ", " << norm.z << endl;
 
-            //light vector
-            l_norm = normalize(light - intersect);
-            //if(k == 1)
-            //  cout << l_norm.x << ", " << l_norm.y << ", " << l_norm.z << endl;
-            //l_norm = normalize(intersect - light);
-
             //view vector
             v_norm = normalize(-d);
          
             // Move the intersect point slightly away so that it doesn't intersect itself
             //p_1 = intersect + shadowRay/2500.0f;
             p_1 = intersect + norm/2500.0f;
-            shadowRay = normalize(light - p_1); 
-
-            //shadowRay = vec3(m*vec4(shadowRay,0));
-            //p_1 = vec3(m*vec4(p_1,1));
-
-            float distance = length(light - p_1);
-            if(isShadowed(shadowRay, p_1, distance)) //set color to ambient
+            
+            for(int l = 0; l < (int) lights.size(); l++)
             {
-               p_color = vec3(geometry[k]->fObj->ambient*geometry[k]->pObj->pigment.x*lights[l]->color.x,
-                              geometry[k]->fObj->ambient*geometry[k]->pObj->pigment.y*lights[l]->color.y, 
-                              geometry[k]->fObj->ambient*geometry[k]->pObj->pigment.z*lights[l]->color.z);
-            }
-            else
-            {
-               n_dot_l = dot(norm,l_norm);
-               //cout << n_dot_l << endl;
+               vec3 light = lights[l]->location;
+               //light vector
+               l_norm = normalize(light - intersect);
+               //if(k == 1)
+               //  cout << l_norm.x << ", " << l_norm.y << ", " << l_norm.z << endl;
+               //l_norm = normalize(intersect - light);
+               shadowRay = normalize(light - p_1); 
 
-               if(n_dot_l < 0) //clamp values between zero and 1
-                  n_dot_l = 0;
-               else if(n_dot_l > 1.0)
-                  n_dot_l = 1.0;
-               
-               if(shadingMode == 0)  //Phong
+               //shadowRay = vec3(m*vec4(shadowRay,0));
+               //p_1 = vec3(m*vec4(p_1,1));
+
+               float distance = length(light - p_1);
+               if(isShadowed(shadowRay, p_1, distance)) //set color to ambient
                {
-                     //reflected vector   
-                  vec3 r_norm = normalize(-1.0f*l_norm + 2.0f*n_dot_l*norm);
-                  float v_dot_r = glm::dot(v_norm,r_norm);
-                  
-                  if(v_dot_r < 0) //clamp values between zero and 1
-                     v_dot_r = 0;
-                  else if(v_dot_r > 1.0)
-                     v_dot_r = 1.0;
-            
-                  v_dot_r = pow(v_dot_r, (float)(1.0/geometry[k]->fObj->roughness));
-                  //cout << v_dot_r << endl;
-                              
-                  p_color = vec3((geometry[k]->fObj->diffuse*geometry[k]->pObj->pigment.x*n_dot_l*lights[l]->color.x + geometry[k]->fObj->ambient*geometry[k]->pObj->pigment.x*lights[l]->color.x + geometry[k]->fObj->specular*geometry[k]->pObj->pigment.x*v_dot_r*lights[l]->color.x),
-                                 (geometry[k]->fObj->diffuse*geometry[k]->pObj->pigment.y*n_dot_l*lights[l]->color.y + geometry[k]->fObj->ambient*geometry[k]->pObj->pigment.y*lights[l]->color.y + geometry[k]->fObj->specular*geometry[k]->pObj->pigment.y*v_dot_r*lights[l]->color.y), 
-                                 (geometry[k]->fObj->diffuse*geometry[k]->pObj->pigment.z*n_dot_l*lights[l]->color.z + geometry[k]->fObj->ambient*geometry[k]->pObj->pigment.z*lights[l]->color.z + geometry[k]->fObj->specular*geometry[k]->pObj->pigment.z*v_dot_r*lights[l]->color.z));
-                  //cout << p_color.x << ", " << p_color.y << ", " << p_color.z << endl;
+                  p_color += vec3(geometry[k]->fObj->ambient*geometry[k]->pObj->pigment.x*lights[l]->color.x,
+                                 geometry[k]->fObj->ambient*geometry[k]->pObj->pigment.y*lights[l]->color.y, 
+                                 geometry[k]->fObj->ambient*geometry[k]->pObj->pigment.z*lights[l]->color.z);
                }
-               else if(shadingMode == 1)             // Gaussian Distribution Specular - some code from http://www.arcsynthesis.org/gltut/Illumination/Tut11%20Gaussian.html
-               {     
-                  //cout << "gaussian" << endl;
-                  vec3 halfAngle = normalize(l_norm + v_norm);
-                  float angleNormalHalf = acos(dot(halfAngle, norm));
-                  float exponent = angleNormalHalf / geometry[k]->fObj->roughness;
-                  exponent = -(exponent * exponent);
-                  float gaussianTerm = exp(exponent);
+               else
+               {
+                  n_dot_l = dot(norm,l_norm);
+                  //cout << n_dot_l << endl;
+
+                  if(n_dot_l < 0) //clamp values between zero and 1
+                     n_dot_l = 0;
+                  else if(n_dot_l > 1.0)
+                     n_dot_l = 1.0;
+               
+                  if(shadingMode == 0)  //Phong
+                  {
+                        //reflected vector   
+                     vec3 r_norm = normalize(-1.0f*l_norm + 2.0f*n_dot_l*norm);
+                     float v_dot_r = glm::dot(v_norm,r_norm);
+                  
+                     if(v_dot_r < 0) //clamp values between zero and 1
+                        v_dot_r = 0;
+                     else if(v_dot_r > 1.0)
+                        v_dot_r = 1.0;
             
-                   p_color = vec3((geometry[k]->fObj->diffuse*geometry[k]->pObj->pigment.x*n_dot_l*lights[l]->color.x + geometry[k]->fObj->ambient*geometry[k]->pObj->pigment.x*lights[l]->color.x + geometry[k]->fObj->specular*geometry[k]->pObj->pigment.x*gaussianTerm*lights[l]->color.x),
-                                 (geometry[k]->fObj->diffuse*geometry[k]->pObj->pigment.y*n_dot_l*lights[l]->color.y + geometry[k]->fObj->ambient*geometry[k]->pObj->pigment.y*lights[l]->color.y + geometry[k]->fObj->specular*geometry[k]->pObj->pigment.y*gaussianTerm*lights[l]->color.y), 
-                                 (geometry[k]->fObj->diffuse*geometry[k]->pObj->pigment.z*n_dot_l*lights[l]->color.z + geometry[k]->fObj->ambient*geometry[k]->pObj->pigment.z*lights[l]->color.z + geometry[k]->fObj->specular*geometry[k]->pObj->pigment.z*gaussianTerm*lights[l]->color.z));
+                     v_dot_r = pow(v_dot_r, (float)(1.0/geometry[k]->fObj->roughness));
+                     //cout << v_dot_r << endl;
+                              
+                     p_color += vec3((geometry[k]->fObj->diffuse*geometry[k]->pObj->pigment.x*n_dot_l*lights[l]->color.x + geometry[k]->fObj->ambient*geometry[k]->pObj->pigment.x*lights[l]->color.x + geometry[k]->fObj->specular*geometry[k]->pObj->pigment.x*v_dot_r*lights[l]->color.x),
+                                    (geometry[k]->fObj->diffuse*geometry[k]->pObj->pigment.y*n_dot_l*lights[l]->color.y + geometry[k]->fObj->ambient*geometry[k]->pObj->pigment.y*lights[l]->color.y + geometry[k]->fObj->specular*geometry[k]->pObj->pigment.y*v_dot_r*lights[l]->color.y), 
+                                    (geometry[k]->fObj->diffuse*geometry[k]->pObj->pigment.z*n_dot_l*lights[l]->color.z + geometry[k]->fObj->ambient*geometry[k]->pObj->pigment.z*lights[l]->color.z + geometry[k]->fObj->specular*geometry[k]->pObj->pigment.z*v_dot_r*lights[l]->color.z));
+                     //cout << p_color.x << ", " << p_color.y << ", " << p_color.z << endl;
+                  }
+                  else if(shadingMode == 1)             // Gaussian Distribution Specular - some code from http://www.arcsynthesis.org/gltut/Illumination/Tut11%20Gaussian.html
+                  {     
+                     //cout << "gaussian" << endl;
+                     vec3 halfAngle = normalize(l_norm + v_norm);
+                     float angleNormalHalf = acos(dot(halfAngle, norm));
+                     float exponent = angleNormalHalf / geometry[k]->fObj->roughness;
+                     exponent = -(exponent * exponent);
+                     float gaussianTerm = exp(exponent);
+            
+                      p_color += vec3((geometry[k]->fObj->diffuse*geometry[k]->pObj->pigment.x*n_dot_l*lights[l]->color.x + geometry[k]->fObj->ambient*geometry[k]->pObj->pigment.x*lights[l]->color.x + geometry[k]->fObj->specular*geometry[k]->pObj->pigment.x*gaussianTerm*lights[l]->color.x),
+                                    (geometry[k]->fObj->diffuse*geometry[k]->pObj->pigment.y*n_dot_l*lights[l]->color.y + geometry[k]->fObj->ambient*geometry[k]->pObj->pigment.y*lights[l]->color.y + geometry[k]->fObj->specular*geometry[k]->pObj->pigment.y*gaussianTerm*lights[l]->color.y), 
+                                    (geometry[k]->fObj->diffuse*geometry[k]->pObj->pigment.z*n_dot_l*lights[l]->color.z + geometry[k]->fObj->ambient*geometry[k]->pObj->pigment.z*lights[l]->color.z + geometry[k]->fObj->specular*geometry[k]->pObj->pigment.z*gaussianTerm*lights[l]->color.z));
+                  }
                }
             }
             //p_color = l_norm;
@@ -237,13 +239,37 @@ vec3 RayTracer::raytrace(vec3 d, vec3 p_0, int reflectDepth, int refractDepth)
                }
             }
          }
-      }
       //cout << p_color.x << ", " << p_color.y << ", " << p_color.z << endl;
-
-      t_color = p_color;
+      }
       //cout << t_color.x << ", " << t_color.y << ", " << t_color.z << endl;
+   return p_color;
+}
+
+int RayTracer::findClosest(vec3 p_0, vec3 d)
+{
+   double depth = DBL_MAX;
+   int closest = -1;
+   bool temp = false;
+   float t;
+   float* addr = &t;
+   
+   for(int k = 0; k < (int) geometry.size(); k++)
+   {
+      mat4 m_i = geometry[k]->getTransformation();
+
+      vec3 d_new = vec3(m_i * vec4(d,0));
+      vec3 p_0_new = vec3(m_i * vec4(p_0,1));
+
+      temp = geometry[k]->intersect(d_new, p_0_new, addr);
+      if(temp == true && t > 0.0 && t < depth)
+      {
+         depth = t;
+         closest = k;
+      }
    }
-   return t_color;
+   if(closest != -1)
+   cout << closest << endl;
+   return closest;
 }
 
 bool RayTracer::isShadowed(vec3 shadowRay, vec3 p_1, float distance)
