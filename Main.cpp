@@ -48,7 +48,7 @@ void printPOV();
 
 int main(int argc, char* argv[])
 {
-   if (argc < 6) // Check the value of argc. If not enough parameters have been passed, inform user and exit.
+   if (argc < 7 || argc > 7) // Check the value of argc. If not enough parameters have been passed, inform user and exit.
    { 
         cout << "Usage: RayTracer imageWidth imageHeight -I inputFilename.pov shadingMode antiAliasLevel\n" ; // Inform the user of how to use the program
         return -1;
@@ -75,7 +75,7 @@ int main(int argc, char* argv[])
 
    string tempFile = argv[4];
    fileName = tempFile.substr(0, tempFile.length() - 3) + "tga";
-   cout << fileName;
+   //cout << fileName;
    
    ifstream povFile ( argv[4] ); 
    if ( !povFile.is_open() ) 
