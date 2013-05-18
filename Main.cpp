@@ -37,6 +37,8 @@ vector<Geometry*> geometry;
 int screenWidth;
 int screenHeight;
 int shadingMode;
+int antiAliasLevel;
+
 
 string fileName;
 
@@ -48,7 +50,7 @@ int main(int argc, char* argv[])
 {
    if (argc < 6) // Check the value of argc. If not enough parameters have been passed, inform user and exit.
    { 
-        cout << "Usage: RayTracer imageWidth imageHeight -I inputFilename.pov shadingMode\n" ; // Inform the user of how to use the program
+        cout << "Usage: RayTracer imageWidth imageHeight -I inputFilename.pov shadingMode antiAliasLevel\n" ; // Inform the user of how to use the program
         return -1;
    }
    
@@ -57,12 +59,12 @@ int main(int argc, char* argv[])
    
    if ( !screenWidth ) {
       cout << "Invalid image width\n";
-      cout << "Usage: RayTracer imageWidth imageHeight -I inputFilename.pov shadingMode\n" ; // Inform the user of how to use the program
+      cout << "Usage: RayTracer imageWidth imageHeight -I inputFilename.pov shadingMode antiAliasLevel\n" ; // Inform the user of how to use the program
       return -1;
    }
    if ( !screenHeight) {
       cout << "Invalid image height\n";
-      cout << "Usage: RayTracer imageWidth imageHeight -I inputFilename.pov shadingMode\n" ; // Inform the user of how to use the program
+      cout << "Usage: RayTracer imageWidth imageHeight -I inputFilename.pov shadingMode antiAliasLevel\n" ; // Inform the user of how to use the program
       return -1;
    }
    if(screenHeight > 1440 || screenWidth > 1440)
@@ -88,6 +90,14 @@ int main(int argc, char* argv[])
       cout << "Invalid shading mode\n";
       return -1;
    }
+   
+   antiAliasLevel = atoi(argv[6]);
+   if(antiAliasLevel != 0 && antiAliasLevel != 4 && antiAliasLevel != 9)
+   {
+      cout << "Invalid anti-aliasing level\n";
+      return -1;
+   }
+   
    parsePOV(povFile);
    //printPOV();
    RayTracer rt;

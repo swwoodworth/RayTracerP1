@@ -43,6 +43,8 @@ extern vector<Geometry*> geometry;
 extern int screenWidth;
 extern int screenHeight;
 extern int shadingMode;
+extern int antiAliasLevel;
+
 
 class RayTracer {
   public:

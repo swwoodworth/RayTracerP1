@@ -17,10 +17,67 @@ double pixelToWorldY(int in_y) {
    return b + (t-b)*(in_y+.5)/screenHeight;
 }
 
+// generates an array of 4 anti-aliased ray positions
+void pixelToWorldXAA4(int in_x, float *array) {
+   double l = -length(cameras[0]->right)/2.0;
+   double r = length(cameras[0]->right)/2.0;
+   
+   array[0] = l + (r-l)*(in_x+.25)/screenWidth;
+   array[1] = l + (r-l)*(in_x+.75)/screenWidth;
+   array[2] = l + (r-l)*(in_x+.25)/screenWidth;
+   array[3] = l + (r-l)*(in_x+.75)/screenWidth;
+}
+
+void pixelToWorldYAA4(int in_y, float *array) {
+   double b = -length(cameras[0]->up)/2.0;
+   double t = length(cameras[0]->up)/2.0;
+   
+   array[0] = b + (t-b)*(in_y+.25)/screenHeight;
+   array[1] = b + (t-b)*(in_y+.75)/screenHeight;
+   array[2] = b + (t-b)*(in_y+.25)/screenHeight;
+   array[3] = b + (t-b)*(in_y+.75)/screenHeight;
+}
+
+// generates an array of 9 anti-aliased ray positions
+void pixelToWorldXAA9(int in_x, float *array) {
+   double l = -length(cameras[0]->right)/2.0;
+   double r = length(cameras[0]->right)/2.0;
+   
+   array[0] = l + (r-l)*(in_x+.1666)/screenWidth;
+   array[1] = l + (r-l)*(in_x+.5)/screenWidth;
+   array[2] = l + (r-l)*(in_x+.8333)/screenWidth;
+   
+   array[3] = l + (r-l)*(in_x+.1666)/screenWidth;
+   array[4] = l + (r-l)*(in_x+.5)/screenWidth;
+   array[5] = l + (r-l)*(in_x+.8333)/screenWidth;
+   
+   array[6] = l + (r-l)*(in_x+.1666)/screenWidth;
+   array[7] = l + (r-l)*(in_x+.5)/screenWidth;
+   array[8] = l + (r-l)*(in_x+.8333)/screenWidth;
+}
+
+void pixelToWorldYAA9(int in_y, float *array) {
+   double b = -length(cameras[0]->up)/2.0;
+   double t = length(cameras[0]->up)/2.0;
+   
+   array[0] = b + (t-b)*(in_y+.1666)/screenHeight;
+   array[1] = b + (t-b)*(in_y+.5)/screenHeight;
+   array[2] = b + (t-b)*(in_y+.8333)/screenHeight;
+   
+   array[3] = b + (t-b)*(in_y+.1666)/screenHeight;
+   array[4] = b + (t-b)*(in_y+.5)/screenHeight;
+   array[5] = b + (t-b)*(in_y+.8333)/screenHeight;
+   
+   array[6] = b + (t-b)*(in_y+.1666)/screenHeight;
+   array[7] = b + (t-b)*(in_y+.5)/screenHeight;
+   array[8] = b + (t-b)*(in_y+.8333)/screenHeight;
+}
+
 void RayTracer::genRays()
 {
    TGAWriter tga(screenWidth, screenHeight);
    float  u_s, v_s, w_s;
+   float u_s_array[9], v_s_array[9];
    vec3 u, v, w, p_0, p_color, d, s_prime;
    
    p_0 = cameras[0]->location;
@@ -30,20 +87,58 @@ void RayTracer::genRays()
    for (int i = 0; i < screenHeight; i++)
    {
       for (int j = 0; j < screenWidth; j++)
-      {         
-         u_s = pixelToWorldX(j);
-         v_s = pixelToWorldY(i);
-         w_s = -1;
-         //cout << i_x << ", " << i_y << endl;
-         u = cameras[0]->right/ length(cameras[0]->right);
-         v = cameras[0]->up/ length(cameras[0]->up);
-         w =  cross(u, v);
+      {  
+         p_color = vec3(0.0,0.0,0.0);
+         if(antiAliasLevel == 0)
+         {
+            u_s = pixelToWorldX(j);
+            v_s = pixelToWorldY(i);
+            w_s = -1;
+            //cout << i_x << ", " << i_y << endl;
+            u = cameras[0]->right/ length(cameras[0]->right);
+            v = cameras[0]->up/ length(cameras[0]->up);
+            w =  cross(u, v);
          
-         s_prime = p_0 + u_s*u + v_s*v + w_s*w;
+            s_prime = p_0 + u_s*u + v_s*v + w_s*w;
          
-         d = normalize(s_prime - p_0);
+            d = normalize(s_prime - p_0);
          
-         p_color = raytrace(d, p_0, 0, 0);
+            p_color = raytrace(d, p_0, 0, 0);
+         }
+         else
+         {
+            if(antiAliasLevel == 4)
+            {
+               pixelToWorldXAA9(j, u_s_array);
+               pixelToWorldYAA9(i, v_s_array);
+            }
+            if(antiAliasLevel == 9)
+            {
+               pixelToWorldXAA9(j, u_s_array);
+               pixelToWorldYAA9(i, v_s_array);
+            }
+         
+            w_s = -1;
+         
+            u = cameras[0]->right/ length(cameras[0]->right);
+            v = cameras[0]->up/ length(cameras[0]->up);
+            w =  cross(u, v);
+         
+            for(int k = 0; k < antiAliasLevel; k++)
+            {
+               s_prime = p_0 + u_s_array[k]*u + v_s_array[k]*v + w_s*w;
+         
+               d = normalize(s_prime - p_0);
+         
+               p_color += raytrace(d, p_0, 0, 0);
+            }
+            
+            if(antiAliasLevel == 4)
+               p_color /= 4.0f; 
+            if(antiAliasLevel == 9)
+               p_color /= 9.0f; 
+         }
+         
          //cout << p_color.x << ", " << p_color.y << ", " << p_color.z << endl;
          tga.colorPixel(i*(screenWidth) + j, p_color);
       }
