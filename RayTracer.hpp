@@ -55,6 +55,13 @@ class RayTracer {
    int findClosest(vec3 p_0, vec3 d);
    bool isShadowed(vec3 shadowRay, vec3 p_1, float distance);
    vec3 refractRay(vec3 d, vec3 norm, float n_1, float n_2, bool* success);
+   double pixelToWorldX(int in_x);
+   double pixelToWorldY(int in_y);
+   void pixelToWorldXAA4(int in_x, float *array);
+   void pixelToWorldYAA4(int in_y, float *array);
+   void pixelToWorldXAA9(int in_x, float *array);
+   void pixelToWorldYAA9(int in_y, float *array);
+
 };
 
 #endif

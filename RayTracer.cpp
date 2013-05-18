@@ -5,73 +5,6 @@ RayTracer::RayTracer() {
 
 RayTracer::~RayTracer() {}
 
-double pixelToWorldX(int in_x) {
-   double l = -length(cameras[0]->right)/2.0;
-   double r = length(cameras[0]->right)/2.0;
-   return l + (r-l)*(in_x+.5)/screenWidth;
-}
-
-double pixelToWorldY(int in_y) {
-   double b = -length(cameras[0]->up)/2.0;
-   double t = length(cameras[0]->up)/2.0;
-   return b + (t-b)*(in_y+.5)/screenHeight;
-}
-
-// generates an array of 4 anti-aliased ray positions
-void pixelToWorldXAA4(int in_x, float *array) {
-   double l = -length(cameras[0]->right)/2.0;
-   double r = length(cameras[0]->right)/2.0;
-   
-   array[0] = l + (r-l)*(in_x+.25)/screenWidth;
-   array[1] = l + (r-l)*(in_x+.75)/screenWidth;
-   array[2] = l + (r-l)*(in_x+.25)/screenWidth;
-   array[3] = l + (r-l)*(in_x+.75)/screenWidth;
-}
-
-void pixelToWorldYAA4(int in_y, float *array) {
-   double b = -length(cameras[0]->up)/2.0;
-   double t = length(cameras[0]->up)/2.0;
-   
-   array[0] = b + (t-b)*(in_y+.25)/screenHeight;
-   array[1] = b + (t-b)*(in_y+.75)/screenHeight;
-   array[2] = b + (t-b)*(in_y+.25)/screenHeight;
-   array[3] = b + (t-b)*(in_y+.75)/screenHeight;
-}
-
-// generates an array of 9 anti-aliased ray positions
-void pixelToWorldXAA9(int in_x, float *array) {
-   double l = -length(cameras[0]->right)/2.0;
-   double r = length(cameras[0]->right)/2.0;
-   
-   array[0] = l + (r-l)*(in_x+.1666)/screenWidth;
-   array[1] = l + (r-l)*(in_x+.5)/screenWidth;
-   array[2] = l + (r-l)*(in_x+.8333)/screenWidth;
-   
-   array[3] = l + (r-l)*(in_x+.1666)/screenWidth;
-   array[4] = l + (r-l)*(in_x+.5)/screenWidth;
-   array[5] = l + (r-l)*(in_x+.8333)/screenWidth;
-   
-   array[6] = l + (r-l)*(in_x+.1666)/screenWidth;
-   array[7] = l + (r-l)*(in_x+.5)/screenWidth;
-   array[8] = l + (r-l)*(in_x+.8333)/screenWidth;
-}
-
-void pixelToWorldYAA9(int in_y, float *array) {
-   double b = -length(cameras[0]->up)/2.0;
-   double t = length(cameras[0]->up)/2.0;
-   
-   array[0] = b + (t-b)*(in_y+.1666)/screenHeight;
-   array[1] = b + (t-b)*(in_y+.5)/screenHeight;
-   array[2] = b + (t-b)*(in_y+.8333)/screenHeight;
-   
-   array[3] = b + (t-b)*(in_y+.1666)/screenHeight;
-   array[4] = b + (t-b)*(in_y+.5)/screenHeight;
-   array[5] = b + (t-b)*(in_y+.8333)/screenHeight;
-   
-   array[6] = b + (t-b)*(in_y+.1666)/screenHeight;
-   array[7] = b + (t-b)*(in_y+.5)/screenHeight;
-   array[8] = b + (t-b)*(in_y+.8333)/screenHeight;
-}
 
 void RayTracer::genRays()
 {
@@ -360,5 +293,74 @@ vec3 RayTracer::refractRay(vec3 d, vec3 norm, float n_1, float n_2, bool* succes
    }
    
    return t;
+}
+
+
+double RayTracer::pixelToWorldX(int in_x) {
+   double l = -length(cameras[0]->right)/2.0;
+   double r = length(cameras[0]->right)/2.0;
+   return l + (r-l)*(in_x+.5)/screenWidth;
+}
+
+double RayTracer::pixelToWorldY(int in_y) {
+   double b = -length(cameras[0]->up)/2.0;
+   double t = length(cameras[0]->up)/2.0;
+   return b + (t-b)*(in_y+.5)/screenHeight;
+}
+
+// generates an array of 4 anti-aliased ray positions
+void RayTracer::pixelToWorldXAA4(int in_x, float *array) {
+   double l = -length(cameras[0]->right)/2.0;
+   double r = length(cameras[0]->right)/2.0;
+   
+   array[0] = l + (r-l)*(in_x+.25)/screenWidth;
+   array[1] = l + (r-l)*(in_x+.75)/screenWidth;
+   array[2] = l + (r-l)*(in_x+.25)/screenWidth;
+   array[3] = l + (r-l)*(in_x+.75)/screenWidth;
+}
+
+void RayTracer::pixelToWorldYAA4(int in_y, float *array) {
+   double b = -length(cameras[0]->up)/2.0;
+   double t = length(cameras[0]->up)/2.0;
+   
+   array[0] = b + (t-b)*(in_y+.25)/screenHeight;
+   array[1] = b + (t-b)*(in_y+.75)/screenHeight;
+   array[2] = b + (t-b)*(in_y+.25)/screenHeight;
+   array[3] = b + (t-b)*(in_y+.75)/screenHeight;
+}
+
+// generates an array of 9 anti-aliased ray positions
+void RayTracer::pixelToWorldXAA9(int in_x, float *array) {
+   double l = -length(cameras[0]->right)/2.0;
+   double r = length(cameras[0]->right)/2.0;
+   
+   array[0] = l + (r-l)*(in_x+.1666)/screenWidth;
+   array[1] = l + (r-l)*(in_x+.5)/screenWidth;
+   array[2] = l + (r-l)*(in_x+.8333)/screenWidth;
+   
+   array[3] = l + (r-l)*(in_x+.1666)/screenWidth;
+   array[4] = l + (r-l)*(in_x+.5)/screenWidth;
+   array[5] = l + (r-l)*(in_x+.8333)/screenWidth;
+   
+   array[6] = l + (r-l)*(in_x+.1666)/screenWidth;
+   array[7] = l + (r-l)*(in_x+.5)/screenWidth;
+   array[8] = l + (r-l)*(in_x+.8333)/screenWidth;
+}
+
+void RayTracer::pixelToWorldYAA9(int in_y, float *array) {
+   double b = -length(cameras[0]->up)/2.0;
+   double t = length(cameras[0]->up)/2.0;
+   
+   array[0] = b + (t-b)*(in_y+.1666)/screenHeight;
+   array[1] = b + (t-b)*(in_y+.5)/screenHeight;
+   array[2] = b + (t-b)*(in_y+.8333)/screenHeight;
+   
+   array[3] = b + (t-b)*(in_y+.1666)/screenHeight;
+   array[4] = b + (t-b)*(in_y+.5)/screenHeight;
+   array[5] = b + (t-b)*(in_y+.8333)/screenHeight;
+   
+   array[6] = b + (t-b)*(in_y+.1666)/screenHeight;
+   array[7] = b + (t-b)*(in_y+.5)/screenHeight;
+   array[8] = b + (t-b)*(in_y+.8333)/screenHeight;
 }
 
