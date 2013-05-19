@@ -29,7 +29,9 @@ class BoxObj : public Geometry {
     BoxObj(int id);
     ~BoxObj();
     void parse(ifstream &povFile);
-    friend ostream& operator<< (ostream &out, BoxObj &boxObj);    
+    friend ostream& operator<< (ostream &out, BoxObj &boxObj);
+    bool intersect(vec3 d, vec3 p_0, float* t);
+    vec3 getNormal(vec3 intersect); 
     vec3 corner1;
     vec3 corner2;
 };
