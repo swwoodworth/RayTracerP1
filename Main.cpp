@@ -6,6 +6,7 @@
 #include "ConeObj.hpp"
 #include "PlaneObj.hpp"
 #include "TriangleObj.hpp"
+#include "BBox.hpp"
 #include "RayTracer.hpp"
 
 #include <iostream>
@@ -33,6 +34,7 @@ vector<PlaneObj*> planes;
 vector<TriangleObj*> triangles;
 
 vector<Geometry*> geometry;
+vector<Geometry*> boundedGeometry;
 
 int screenWidth;
 int screenHeight;
@@ -44,7 +46,11 @@ string fileName;
 
 void parsePOV(ifstream &poVFile);
 void printPOV();
-
+bool bBoxSortX(Geometry *g1, Geometry *g2);
+bool bBoxSortY(Geometry *g1, Geometry *g2);
+bool bBoxSortZ(Geometry *g1, Geometry *g2);
+BBox buildBBTree(vector<Geometry*> g, int axis);
+Geometry* intersectBBTree(BBox bBox, vec3 p_0, vec3 d, float* t);
 
 int main(int argc, char* argv[])
 {
@@ -99,7 +105,18 @@ int main(int argc, char* argv[])
    }
    
    parsePOV(povFile);
+   /*std::sort(geometry.begin(), geometry.end(), bBoxSortX);
+      for(int i = 0; i< (int) geometry.size(); i++)
+      {
+         cout << " " << geometry[i]->center.x;  
+      }*/
+   
    //printPOV();
+   BBox test = buildBBTree(boundedGeometry, 0);
+   float t;
+   float* addr = &t;
+   intersectBBTree(test, vec3(0,0,5), vec3(0,0,-1), addr);
+   
    RayTracer rt;
    rt.genRays();
    //cout << "I ran!\n";
@@ -134,6 +151,7 @@ void parsePOV(ifstream &povFile)
          SphereObj *sphere = new SphereObj();
          sphere->parse(povFile);
          geometry.push_back(sphere);
+         boundedGeometry.push_back(sphere);
       }
       if(token.compare("box") == 0)
       {
@@ -141,6 +159,7 @@ void parsePOV(ifstream &povFile)
          BoxObj *box = new BoxObj();
          box->parse(povFile);
          geometry.push_back(box);
+         boundedGeometry.push_back(box);
       } 
       if(token.compare("cone") == 0)
       {
@@ -148,6 +167,7 @@ void parsePOV(ifstream &povFile)
          ConeObj *cone = new ConeObj();
          cone->parse(povFile);
          geometry.push_back(cone);
+         boundedGeometry.push_back(cone);
       } 
       if(token.compare("plane") == 0)
       {
@@ -155,6 +175,7 @@ void parsePOV(ifstream &povFile)
          PlaneObj *plane = new PlaneObj();
          plane->parse(povFile);
          geometry.push_back(plane);
+         planes.push_back(plane);
       } 
       if(token.compare("triangle") == 0)
       {
@@ -162,6 +183,8 @@ void parsePOV(ifstream &povFile)
          TriangleObj *triangle = new TriangleObj();
          triangle->parse(povFile);
          geometry.push_back(triangle);
+         boundedGeometry.push_back(triangle);
+
       } 
       if(token.compare("//") == 0)
       {
@@ -213,5 +236,104 @@ void printPOV()
    for(unsigned int i = 0; i<geometry.size(); i++)
    {
       //cout << *geometry[i] << endl;
+   }
+}
+
+bool bBoxSortX(Geometry *g1, Geometry *g2)
+{
+   return (g1->center.x < g2->center.x);
+}
+
+bool bBoxSortY(Geometry *g1, Geometry *g2)
+{
+   return (g1->center.y < g2->center.y);
+}
+
+bool bBoxSortZ(Geometry *g1, Geometry *g2)
+{
+   return (g1->center.z < g2->center.z);
+}
+
+BBox buildBBTree(vector<Geometry*> g, int axis)
+{
+   BBox newBBox;
+   int n = g.size();
+   if(n == 1)
+   {
+      newBBox = BBox(g[0]);
+   }
+   else if(n == 2)
+   {
+      BBox *left = new BBox(g[0]);
+      BBox *right = new BBox(g[1]);
+      newBBox = BBox(left, right);
+   }
+   else
+   {
+      //cout << n << endl;
+
+      if(axis == 0)
+         std::sort(g.begin(), g.end(), bBoxSortX);
+      else if(axis == 1)
+         std::sort(g.begin(), g.end(), bBoxSortY);
+      else if(axis == 2)
+         std::sort(g.begin(), g.end(), bBoxSortZ);
+      
+      /*for(int i = 0; i< (int) g.size(); i++)
+      {
+         cout << " " << g[i]->center.x;  
+      }*/
+      
+      vector<Geometry*> v1(g.begin(), g.begin() + g.size()/2),  //split vector
+                        v2(g.begin() + g.size()/2, g.end());
+      //cout << "v1 size " << v1.size() << endl;
+      //cout << "v2 size " << v2.size() << endl;
+
+      
+      BBox *left = new BBox(buildBBTree(v1, (axis + 1)%3));
+      BBox *right = new BBox(buildBBTree(v2, (axis + 1)%3));
+      newBBox = BBox(left, right);
+   }
+   
+   return newBBox;
+}
+
+Geometry* intersectBBTree(BBox bBox, vec3 p_0, vec3 d, float* t)
+{
+   if(bBox.intersect(d,p_0,t))
+   {
+      cout << "hit" << endl;
+      if(bBox.geometry != NULL) // at a leaf
+      {
+         //bBox.Geometry.intersect(d,p_0,t);
+         return bBox.geometry;
+      }
+      else
+      {
+         Geometry *g1 = intersectBBTree(*bBox.left, p_0, d, t);
+         Geometry *g2 = intersectBBTree(*bBox.right, p_0, d, t);
+         if(g1 != NULL && g2 != NULL) //check which is closer
+         {
+            g1->intersect(d,p_0,t);
+            float temp1 = *t;
+            g2->intersect(d,p_0,t);
+            float temp2 = *t;
+            if(temp1 < temp2)
+               return g1;
+            else
+               return g2;
+         }
+         else if (g1 != NULL && g2 == NULL)  //only hit left
+            return g1;
+         else if (g1 == NULL && g2 != NULL)  //only hit right
+            return g2;
+         else                                //didn't hit either
+            return NULL;
+      }
+   }
+   else
+   {
+      cout << "miss" << endl;
+      return NULL;
    }
 }

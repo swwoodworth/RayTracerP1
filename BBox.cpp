@@ -1,49 +1,44 @@
-#include "BoxObj.hpp"
+#include "BBox.hpp"
 
-BoxObj::BoxObj() {
-   ObjID = -1;
+BBox::BBox() {
 }
 
-BoxObj::BoxObj(int id) {
-   ObjID = id;
+BBox::BBox(Geometry *g) {
+   geometry = g;
+   left = NULL;
+   right = NULL;
+   corner1 = g->getBBoxCorner1();
+   corner2 = g->getBBoxCorner2();
+   buildBB();
+   transformBB();
+   cout << c[4].x << " " << c[4].y << " " << c[4].z << endl;
+   cout << c[2].x << " " << c[2].y << " " << c[2].z << endl;
 }
 
-BoxObj::~BoxObj() {}
+BBox::BBox(BBox *l, BBox *r) {
+   geometry = NULL;
+   left = l;
+   right = r;
+   corner1 = min(left->corner1, right->corner1);
+   corner2 = max(left->corner2, right->corner2);
+   buildBB();
+}
 
-ostream& operator<< (ostream &out, BoxObj &boxObj)
+BBox::~BBox() {}
+
+ostream& operator<< (ostream &out, BBox &bBox)
 {
     // Since operator<< is a friend of the Point class, we can access
     // Point's members directly.
-    out << "(" << boxObj.corner1.x << ", " <<
-                  boxObj.corner1.y << ", " <<
-                  boxObj.corner1.z << ")";
+    out << "(" << bBox.corner1.x << ", " <<
+                  bBox.corner1.y << ", " <<
+                  bBox.corner1.z << ")";
     return out;
 }
 
-
-void BoxObj::parse(ifstream &povFile) {
-   string token;
-   string line;
-   char *line2;
-   //char *token2;
-   
-   getline(povFile, line);
-   line2 = (char*)line.c_str();
-
-   corner1.x = atof(strtok (line2,"{ <,>}"));
-   corner1.y = atof(strtok (NULL,"{ <,>}"));
-   corner1.z = atof(strtok (NULL,"{ <,>}"));  
-   corner2.x = atof(strtok (NULL,"{ <,>}"));
-   corner2.y = atof(strtok (NULL,"{ <,>}"));
-   corner2.z = atof(strtok (NULL,"{ <,>}")); 
-   
-   center = (corner1 + corner2)/2.0f;
-
-   parseGeometry(povFile);
-}
-
-bool BoxObj::intersect(vec3 d, vec3 p_0, float* t)
+bool BBox::intersect(vec3 d, vec3 p_0, float* t)
 {
+
    float tmin,tmax,txmin,txmax,tymin,tymax,tzmin,tzmax;
 
    if(d.x >= 0)
@@ -93,7 +88,9 @@ bool BoxObj::intersect(vec3 d, vec3 p_0, float* t)
    }
    
    if( (tmin > tzmax) || (tzmin > tmax) )
+   {
       return false;
+   }
    
    if (tzmin > tmin)
       tmin = tzmin;
@@ -112,10 +109,12 @@ bool BoxObj::intersect(vec3 d, vec3 p_0, float* t)
       return true;
    }
    else
+   {
       return false;
+   }
 }
 
-vec3 BoxObj::getNormal(vec3 intersect) 
+vec3 BBox::getNormal(vec3 intersect) 
 {
    if( intersect.x > corner1.x-.00001 && intersect.x < corner1.x+.00001 )
       return vec3(-1,0,0);
@@ -133,15 +132,32 @@ vec3 BoxObj::getNormal(vec3 intersect)
    return vec3(1,0,0);
 }
 
-vec3 BoxObj::getBBoxCorner1() 
+void BBox::buildBB()
 {
-   return corner1 + vec3(-.00001, -.00001, -.0001);
+   c[0] = vec3(corner1.x, corner1.y, corner2.z);
+   c[1] = vec3(corner1.x, corner2.y, corner2.z);
+   c[2] = vec3(corner2.x, corner2.y, corner2.z);
+   c[3] = vec3(corner2.x, corner1.y, corner2.z);
+   c[4] = vec3(corner1.x, corner1.y, corner1.z);
+   c[5] = vec3(corner1.x, corner2.y, corner1.z);
+   c[6] = vec3(corner2.x, corner2.y, corner1.z);
+   c[7] = vec3(corner2.x, corner1.y, corner1.z);
 }
 
-vec3 BoxObj::getBBoxCorner2() 
+void BBox::transformBB()
 {
-   return corner2 + vec3(.00001, .00001, .0001);
+   mat4 m_i = geometry->getTransformation();
+      
+   c[0] = vec3(m_i* vec4(c[0],1));
+   c[1] = vec3(m_i* vec4(c[1],1));
+   c[2] = vec3(m_i* vec4(c[2],1));
+   c[3] = vec3(m_i* vec4(c[3],1));
+   c[4] = vec3(m_i* vec4(c[4],1));
+   c[5] = vec3(m_i* vec4(c[5],1));
+   c[6] = vec3(m_i* vec4(c[6],1));
+   c[7] = vec3(m_i* vec4(c[7],1));
 }
+
 
 
 

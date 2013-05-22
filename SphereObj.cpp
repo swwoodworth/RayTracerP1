@@ -49,9 +49,6 @@ void SphereObj::parse(ifstream &povFile)
    char *line2;
    //char *token2;
    
-   //cout << "I'm parsing a sphere" << endl;
-
-   
    getline(povFile, line);
    line2 = (char*)line.c_str();
 
@@ -59,9 +56,10 @@ void SphereObj::parse(ifstream &povFile)
    location.y = atof(strtok (NULL,"{ <,>}"));
    location.z = atof(strtok (NULL,"{ <,>}"));  
    radius = atof(strtok (NULL,"{ <,>}"));  
+   
+   center = location;
 
    parseGeometry(povFile);
-   //cout << "yup" << endl;
 }
 
 bool SphereObj::intersect(vec3 d, vec3 p_0, float* t)
@@ -99,7 +97,22 @@ bool SphereObj::intersect(vec3 d, vec3 p_0, float* t)
 
 vec3 SphereObj::getNormal(vec3 intersect) 
 {
+   //cout << "here" << endl;
    return normalize(vec3(intersect - location));
 }
 
+vec3 SphereObj::getBBoxCorner1()
+{
+   //cout << location.x - radius - .00001 << endl;
+   return vec3(location.x - radius - .00001,
+               location.y - radius - .00001,
+               location.z - radius - .00001);
+}
+
+vec3 SphereObj::getBBoxCorner2()
+{
+   return vec3(location.x + radius + .00001,
+               location.y + radius + .00001,
+               location.z + radius + .00001);
+}
 

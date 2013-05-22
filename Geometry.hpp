@@ -31,6 +31,8 @@ class Geometry : public RayTracerObject {
     virtual void parse(ifstream &povFile) {cout << "Parse is not implemented for this object" << endl;}; //base class parse function
     virtual bool intersect(vec3 d, vec3 p_0, float* t) {return false;};
     virtual vec3 getNormal(vec3 intersect) {return vec3(0.0,0.0,0.0);};
+    virtual vec3 getBBoxCorner1() {return vec3(0.0,0.0,0.0);};
+    virtual vec3 getBBoxCorner2() {return vec3(0.0,0.0,0.0);};
     void parseGeometry(ifstream &povFile);
     mat4 getTransformation();
     friend ostream& operator<< (ostream &out, Geometry &gObj) {out << "Not implemented";
@@ -40,6 +42,7 @@ class Geometry : public RayTracerObject {
     TranslateObj *tObj;
     ScaleObj *sObj;
     RotateObj *rObj;
+    vec3 center;
     mat4 m;
     mat4 m_i;
 };

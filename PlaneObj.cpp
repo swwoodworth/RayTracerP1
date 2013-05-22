@@ -36,6 +36,7 @@ void PlaneObj::parse(ifstream &povFile) {
    distance = atof(strtok (NULL,"{ <,>}"));  
             //cout << distance;
 
+   center = normal * distance;
 
    parseGeometry(povFile);
 }

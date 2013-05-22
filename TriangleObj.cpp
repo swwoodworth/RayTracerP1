@@ -49,6 +49,8 @@ void TriangleObj::parse(ifstream &povFile) {
    corner3.x = atof(strtok (line2,"{ <,>}"));
    corner3.y = atof(strtok (NULL,"{ <,>}"));
    corner3.z = atof(strtok (NULL,"{ <,>}"));
+   
+   center = (corner1 + corner2 + corner3)/3.0f;
 
    parseGeometry(povFile);
 }
@@ -148,5 +150,21 @@ vec3 TriangleObj::getNormal(vec3 intersect)
    temp = normalize(temp);
    //cout << temp.x << ", " << temp.y << ", " << temp.z << endl;
    return normalize(temp);
+}
+
+vec3 TriangleObj::getBBoxCorner1()
+{
+   float minx = std::min(std::min(corner1.x, corner2.x), corner3.x) - .00001;
+   float miny = std::min(std::min(corner1.y, corner2.y), corner3.y) - .00001;
+   float minz = std::min(std::min(corner1.z, corner2.z), corner3.z) - .00001;
+   return vec3(minx,miny,minz);
+}
+
+vec3 TriangleObj::getBBoxCorner2()
+{
+   float maxx = std::max(std::max(corner1.x, corner2.x), corner3.x) + .00001;
+   float maxy = std::max(std::max(corner1.y, corner2.y), corner3.y) + .00001;
+   float maxz = std::max(std::max(corner1.z, corner2.z), corner3.z) + .00001;
+   return vec3(maxx,maxy,maxz);
 }
 

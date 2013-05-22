@@ -32,6 +32,8 @@ class BoxObj : public Geometry {
     friend ostream& operator<< (ostream &out, BoxObj &boxObj);
     bool intersect(vec3 d, vec3 p_0, float* t);
     vec3 getNormal(vec3 intersect); 
+    vec3 getBBoxCorner1();
+    vec3 getBBoxCorner2();
     vec3 corner1;
     vec3 corner2;
 };
