@@ -146,16 +146,27 @@ void BBox::buildBB()
 
 void BBox::transformBB()
 {
-   mat4 m_i = geometry->getTransformation();
+   mat4 m = glm::inverse(geometry->getTransformation());
       
-   c[0] = vec3(m_i* vec4(c[0],1));
-   c[1] = vec3(m_i* vec4(c[1],1));
-   c[2] = vec3(m_i* vec4(c[2],1));
-   c[3] = vec3(m_i* vec4(c[3],1));
-   c[4] = vec3(m_i* vec4(c[4],1));
-   c[5] = vec3(m_i* vec4(c[5],1));
-   c[6] = vec3(m_i* vec4(c[6],1));
-   c[7] = vec3(m_i* vec4(c[7],1));
+   c[0] = vec3(m * vec4(c[0],1));
+   c[1] = vec3(m * vec4(c[1],1));
+   c[2] = vec3(m * vec4(c[2],1));
+   c[3] = vec3(m * vec4(c[3],1));
+   c[4] = vec3(m * vec4(c[4],1));
+   c[5] = vec3(m * vec4(c[5],1));
+   c[6] = vec3(m * vec4(c[6],1));
+   c[7] = vec3(m * vec4(c[7],1));
+}
+
+void BBox::rebuildBB()
+{  
+   corner1.x = std::min(std::min(std::min(std::min(std::min(std::min(std::min(c[0].x,c[1].x),c[2].x),c[3].x),c[4].x),c[5].x),c[6].x),c[7].x);
+   corner1.y = std::min(std::min(std::min(std::min(std::min(std::min(std::min(c[0].y,c[1].y),c[2].y),c[3].y),c[4].y),c[5].y),c[6].y),c[7].y);
+   corner1.z = std::min(std::min(std::min(std::min(std::min(std::min(std::min(c[0].z,c[1].z),c[2].z),c[3].z),c[4].z),c[5].z),c[6].z),c[7].z);
+   
+   corner2.x = std::max(std::max(std::max(std::max(std::max(std::max(std::max(c[0].x,c[1].x),c[2].x),c[3].x),c[4].x),c[5].x),c[6].x),c[7].x);
+   corner2.y = std::max(std::max(std::max(std::max(std::max(std::max(std::max(c[0].y,c[1].y),c[2].y),c[3].y),c[4].y),c[5].y),c[6].y),c[7].y);
+   corner2.z = std::max(std::max(std::max(std::max(std::max(std::max(std::max(c[0].z,c[1].z),c[2].z),c[3].z),c[4].z),c[5].z),c[6].z),c[7].z);
 }
 
 

@@ -115,7 +115,8 @@ int main(int argc, char* argv[])
    BBox test = buildBBTree(boundedGeometry, 0);
    float t;
    float* addr = &t;
-   intersectBBTree(test, vec3(0,0,5), vec3(0,0,-1), addr);
+   Geometry *hope = intersectBBTree(test, vec3(0,0,5), vec3(0,0,-1), addr);
+   cout << hope->getNormal(vec3(1,0,0)).x << endl;
    
    RayTracer rt;
    rt.genRays();
@@ -305,28 +306,46 @@ Geometry* intersectBBTree(BBox bBox, vec3 p_0, vec3 d, float* t)
       cout << "hit" << endl;
       if(bBox.geometry != NULL) // at a leaf
       {
-         //bBox.Geometry.intersect(d,p_0,t);
-         return bBox.geometry;
+         mat4 m_i = bBox.geometry->getTransformation();
+
+         vec3 d_new = vec3(m_i * vec4(d,0));
+         vec3 p_0_new = vec3(m_i * vec4(p_0,1));
+
+         bool temp = bBox.geometry->intersect(d_new, p_0_new, t);
+         if(temp != true)
+            return NULL;
+         else
+            return bBox.geometry;
       }
       else
       {
          Geometry *g1 = intersectBBTree(*bBox.left, p_0, d, t);
+         float t_left = *t;
          Geometry *g2 = intersectBBTree(*bBox.right, p_0, d, t);
+         float t_right = *t;
          if(g1 != NULL && g2 != NULL) //check which is closer
          {
-            g1->intersect(d,p_0,t);
-            float temp1 = *t;
-            g2->intersect(d,p_0,t);
-            float temp2 = *t;
-            if(temp1 < temp2)
+            if(t_left < t_right)   // left is closer
+            {
+               *t = t_left;
                return g1;
+            }
             else
+            {
+               *t = t_right;
                return g2;
+            }
          }
          else if (g1 != NULL && g2 == NULL)  //only hit left
+         {
+            *t = t_left;
             return g1;
+         }
          else if (g1 == NULL && g2 != NULL)  //only hit right
+         {
+            *t = t_right;
             return g2;
+         }
          else                                //didn't hit either
             return NULL;
       }

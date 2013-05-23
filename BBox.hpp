@@ -34,6 +34,8 @@ class BBox : public Geometry {
     vec3 getNormal(vec3 intersect); 
     void buildBB();
     void transformBB();
+    void rebuildBB();
+
     
     vec3 corner1;
     vec3 corner2;
