@@ -11,8 +11,9 @@ BBox::BBox(Geometry *g) {
    corner2 = g->getBBoxCorner2();
    buildBB();
    transformBB();
-   cout << c[4].x << " " << c[4].y << " " << c[4].z << endl;
-   cout << c[2].x << " " << c[2].y << " " << c[2].z << endl;
+   rebuildBB();
+   //cout << c[4].x << " " << c[4].y << " " << c[4].z << endl;
+   //cout << c[2].x << " " << c[2].y << " " << c[2].z << endl;
 }
 
 BBox::BBox(BBox *l, BBox *r) {

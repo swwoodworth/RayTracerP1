@@ -36,6 +36,8 @@ vector<TriangleObj*> triangles;
 vector<Geometry*> geometry;
 vector<Geometry*> boundedGeometry;
 
+BBox rootBB;
+
 int screenWidth;
 int screenHeight;
 int shadingMode;
@@ -50,7 +52,7 @@ bool bBoxSortX(Geometry *g1, Geometry *g2);
 bool bBoxSortY(Geometry *g1, Geometry *g2);
 bool bBoxSortZ(Geometry *g1, Geometry *g2);
 BBox buildBBTree(vector<Geometry*> g, int axis);
-Geometry* intersectBBTree(BBox bBox, vec3 p_0, vec3 d, float* t);
+//Geometry* intersectBBTree(BBox bBox, vec3 p_0, vec3 d, float* t);
 
 int main(int argc, char* argv[])
 {
@@ -112,12 +114,12 @@ int main(int argc, char* argv[])
       }*/
    
    //printPOV();
-   BBox test = buildBBTree(boundedGeometry, 0);
-   float t;
+   rootBB = buildBBTree(boundedGeometry, 0);
+   /*float t;
    float* addr = &t;
    Geometry *hope = intersectBBTree(test, vec3(0,0,5), vec3(0,0,-1), addr);
    cout << hope->getNormal(vec3(1,0,0)).x << endl;
-   
+   */
    RayTracer rt;
    rt.genRays();
    //cout << "I ran!\n";
@@ -167,8 +169,8 @@ void parsePOV(ifstream &povFile)
          //cout << "Found cone\n";
          ConeObj *cone = new ConeObj();
          cone->parse(povFile);
-         geometry.push_back(cone);
-         boundedGeometry.push_back(cone);
+         //geometry.push_back(cone);
+         //boundedGeometry.push_back(cone);
       } 
       if(token.compare("plane") == 0)
       {
@@ -299,60 +301,3 @@ BBox buildBBTree(vector<Geometry*> g, int axis)
    return newBBox;
 }
 
-Geometry* intersectBBTree(BBox bBox, vec3 p_0, vec3 d, float* t)
-{
-   if(bBox.intersect(d,p_0,t))
-   {
-      cout << "hit" << endl;
-      if(bBox.geometry != NULL) // at a leaf
-      {
-         mat4 m_i = bBox.geometry->getTransformation();
-
-         vec3 d_new = vec3(m_i * vec4(d,0));
-         vec3 p_0_new = vec3(m_i * vec4(p_0,1));
-
-         bool temp = bBox.geometry->intersect(d_new, p_0_new, t);
-         if(temp != true)
-            return NULL;
-         else
-            return bBox.geometry;
-      }
-      else
-      {
-         Geometry *g1 = intersectBBTree(*bBox.left, p_0, d, t);
-         float t_left = *t;
-         Geometry *g2 = intersectBBTree(*bBox.right, p_0, d, t);
-         float t_right = *t;
-         if(g1 != NULL && g2 != NULL) //check which is closer
-         {
-            if(t_left < t_right)   // left is closer
-            {
-               *t = t_left;
-               return g1;
-            }
-            else
-            {
-               *t = t_right;
-               return g2;
-            }
-         }
-         else if (g1 != NULL && g2 == NULL)  //only hit left
-         {
-            *t = t_left;
-            return g1;
-         }
-         else if (g1 == NULL && g2 != NULL)  //only hit right
-         {
-            *t = t_right;
-            return g2;
-         }
-         else                                //didn't hit either
-            return NULL;
-      }
-   }
-   else
-   {
-      cout << "miss" << endl;
-      return NULL;
-   }
-}

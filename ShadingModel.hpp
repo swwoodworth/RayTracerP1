@@ -44,8 +44,8 @@ class ShadingModel {
   public:
     ShadingModel();
     ~ShadingModel();
-    vec3 phong(vec3 norm, vec3 l_norm, vec3 v_norm, int k, int l);
-    vec3 gaussian(vec3 norm, vec3 l_norm, vec3 v_norm, int k, int l);
+    vec3 phong(vec3 norm, vec3 l_norm, vec3 v_norm, Geometry *geom, int l);
+    vec3 gaussian(vec3 norm, vec3 l_norm, vec3 v_norm, Geometry *geom, int l);
 };
 
 #endif

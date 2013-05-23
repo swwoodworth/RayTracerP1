@@ -12,6 +12,8 @@
 #include "PlaneObj.hpp"
 #include "TriangleObj.hpp"
 #include "ShadingModel.hpp"
+#include "BBox.hpp"
+
 
 #include <iostream>
 #include <fstream>
@@ -39,6 +41,8 @@ extern vector<TriangleObj*> triangles;
 
 extern vector<Geometry*> geometry;
 
+extern BBox rootBB;
+
 
 extern int screenWidth;
 extern int screenHeight;
@@ -53,6 +57,7 @@ class RayTracer {
    void genRays();
    vec3 raytrace(vec3 d, vec3 p_0, int reflectDepth, int refractDepth);
    int findClosest(vec3 p_0, vec3 d);
+   int findClosestPlane(vec3 p_0, vec3 d);
    bool isShadowed(vec3 shadowRay, vec3 p_1, float distance);
    vec3 refractRay(vec3 d, vec3 norm, float n_1, float n_2, bool* success);
    double pixelToWorldX(int in_x);

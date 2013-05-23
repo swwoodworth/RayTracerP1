@@ -5,6 +5,8 @@ RayTracer::RayTracer() {
 
 RayTracer::~RayTracer() {}
 
+Geometry* intersectBBTree(BBox bBox, vec3 p_0, vec3 d, float* t);
+
 
 void RayTracer::genRays()
 {
@@ -75,6 +77,7 @@ void RayTracer::genRays()
          //cout << p_color.x << ", " << p_color.y << ", " << p_color.z << endl;
          tga.colorPixel(i*(screenWidth) + j, p_color);
       }
+      cout << i << endl;
    }
    
    tga.writeTGA(true);
@@ -89,33 +92,40 @@ vec3 RayTracer::raytrace(vec3 d, vec3 p_0, int reflectDepth, int refractDepth)
    ShadingModel shadingModel;
    
    double depth = DBL_MAX;
-   vec3 p_color = vec3(0.0,0.0,0.0);  
-   int k = findClosest(p_0, d);
-   if(k==-1)
+   vec3 p_color = vec3(0.0,0.0,0.0); 
+   
+   Geometry *geom = intersectBBTree(rootBB, p_0, d, addr); 
+   int k = findClosestPlane(p_0, d);
+   if(k!=-1 && geom == NULL)
+      geom = planes[k];
+   if(k==-1 && geom == NULL)
       return p_color; //return black
+   /*int k = findClosest(p_0, d);
+   if(k==-1)
+      return p_color; //return black*/
    else
    {
-      mat4 m_i = geometry[k]->getTransformation();
+      mat4 m_i = geom->getTransformation();
 
       vec3 d_new = vec3(m_i * vec4(d,0));
       vec3 p_0_new = vec3(m_i * vec4(p_0,1));
 
-      temp = geometry[k]->intersect(d_new, p_0_new, addr);
+      temp = geom->intersect(d_new, p_0_new, addr);
       if(temp == true && t > 0.0 && t < depth)
       {
          depth = t;
 
          mat4 m_i_t = transpose(m_i);
       
-         reflect = geometry[k]->fObj->reflection;
-         refract = geometry[k]->fObj->refraction;
-         refractVal = geometry[k]->pObj->pigment.w;
+         reflect = geom->fObj->reflection;
+         refract = geom->fObj->refraction;
+         refractVal = geom->pObj->pigment.w;
       
          intersect = vec3(p_0 + (d * t));
          objIntersect = vec3(p_0_new + (d_new * t));
 
          //geometry normal
-         norm = normalize(vec3(m_i_t*vec4(geometry[k]->getNormal(objIntersect), 0)));
+         norm = normalize(vec3(m_i_t*vec4(geom->getNormal(objIntersect), 0)));
          //if(k == 1)
          //  cout << norm.x << ", " << norm.y << ", " << norm.z << endl;
 
@@ -137,16 +147,16 @@ vec3 RayTracer::raytrace(vec3 d, vec3 p_0, int reflectDepth, int refractDepth)
             float distance = length(light - p_1);
             if(isShadowed(shadowRay, p_1, distance)) //set color to ambient
             {
-               p_color += vec3(geometry[k]->fObj->ambient*geometry[k]->pObj->pigment.x*lights[l]->color.x,
-                              geometry[k]->fObj->ambient*geometry[k]->pObj->pigment.y*lights[l]->color.y, 
-                              geometry[k]->fObj->ambient*geometry[k]->pObj->pigment.z*lights[l]->color.z);
+               p_color += vec3(geom->fObj->ambient*geom->pObj->pigment.x*lights[l]->color.x,
+                              geom->fObj->ambient*geom->pObj->pigment.y*lights[l]->color.y, 
+                              geom->fObj->ambient*geom->pObj->pigment.z*lights[l]->color.z);
             }
             else
             {
                if(shadingMode == 0)  //Phong
-                  p_color += shadingModel.phong(norm, l_norm, v_norm, k, l);
+                  p_color += shadingModel.phong(norm, l_norm, v_norm, geom, l);
                else if(shadingMode == 1)             // Gaussian Distribution Specular - some code from http://www.arcsynthesis.org/gltut/Illumination/Tut11%20Gaussian.html
-                  p_color += shadingModel.gaussian(norm, l_norm, v_norm, k, l);
+                  p_color += shadingModel.gaussian(norm, l_norm, v_norm, geom, l);
             }
          }
          //p_color = l_norm;
@@ -171,7 +181,7 @@ vec3 RayTracer::raytrace(vec3 d, vec3 p_0, int reflectDepth, int refractDepth)
             }*/
          
             n2 = 1;
-            n1 = geometry[k]->fObj->ior;
+            n1 = geom->fObj->ior;
          
             if(dot(d_new, norm) < 0)
             {
@@ -254,15 +264,46 @@ int RayTracer::findClosest(vec3 p_0, vec3 d)
    return closest;
 }
 
+int RayTracer::findClosestPlane(vec3 p_0, vec3 d)
+{
+   double depth = DBL_MAX;
+   int closest = -1;
+   bool temp = false;
+   float t;
+   float* addr = &t;
+   
+   for(int k = 0; k < (int) planes.size(); k++)
+   {
+      mat4 m_i = planes[k]->getTransformation();
+
+      vec3 d_new = vec3(m_i * vec4(d,0));
+      vec3 p_0_new = vec3(m_i * vec4(p_0,1));
+
+      temp = planes[k]->intersect(d_new, p_0_new, addr);
+      if(temp == true && t > 0.0 && t < depth)
+      {
+         depth = t;
+         closest = k;
+      }
+   }
+   //if(closest != -1)
+   //cout << closest << endl;
+   return closest;
+}
+
 bool RayTracer::isShadowed(vec3 shadowRay, vec3 p_1, float distance)
 {
-   bool temp = false;
+   //bool temp = false;
    float t;
    float* addr = &t;
 
    //cout << "shadow ray " << shadowRay.x << ", " << shadowRay.y << ", " << shadowRay.z << endl;
    //cout << p_1.x << ", " << p_1.y << ", " << p_1.z << endl;
-   for(int k = 0; k < (int) geometry.size(); k++)
+   
+   Geometry *geom = intersectBBTree(rootBB, p_1, shadowRay, addr); 
+   if(geom != NULL && t > 0 && t < distance)
+         return true;
+   /*for(int k = 0; k < (int) geometry.size(); k++)
    {
       mat4 m_i = geometry[k]->getTransformation();
       
@@ -273,7 +314,7 @@ bool RayTracer::isShadowed(vec3 shadowRay, vec3 p_1, float distance)
       
       if(temp && t > 0 && t < distance)
          return true;
-   }    
+   }    */
    return false;       
 }
 
@@ -362,5 +403,63 @@ void RayTracer::pixelToWorldYAA9(int in_y, float *array) {
    array[6] = b + (t-b)*(in_y+.1666)/screenHeight;
    array[7] = b + (t-b)*(in_y+.5)/screenHeight;
    array[8] = b + (t-b)*(in_y+.8333)/screenHeight;
+}
+
+Geometry* intersectBBTree(BBox bBox, vec3 p_0, vec3 d, float* t)
+{
+   if(bBox.intersect(d,p_0,t))
+   {
+      //cout << "hit" << endl;
+      if(bBox.geometry != NULL) // at a leaf
+      {
+         mat4 m_i = bBox.geometry->getTransformation();
+
+         vec3 d_new = vec3(m_i * vec4(d,0));
+         vec3 p_0_new = vec3(m_i * vec4(p_0,1));
+
+         bool temp = bBox.geometry->intersect(d_new, p_0_new, t);
+         if(temp != true)
+            return NULL;
+         else
+            return bBox.geometry;
+      }
+      else
+      {
+         Geometry *g1 = intersectBBTree(*bBox.left, p_0, d, t);
+         float t_left = *t;
+         Geometry *g2 = intersectBBTree(*bBox.right, p_0, d, t);
+         float t_right = *t;
+         if(g1 != NULL && g2 != NULL) //check which is closer
+         {
+            if(t_left < t_right)   // left is closer
+            {
+               *t = t_left;
+               return g1;
+            }
+            else
+            {
+               *t = t_right;
+               return g2;
+            }
+         }
+         else if (g1 != NULL && g2 == NULL)  //only hit left
+         {
+            *t = t_left;
+            return g1;
+         }
+         else if (g1 == NULL && g2 != NULL)  //only hit right
+         {
+            *t = t_right;
+            return g2;
+         }
+         else                                //didn't hit either
+            return NULL;
+      }
+   }
+   else
+   {
+      //cout << "miss" << endl;
+      return NULL;
+   }
 }
 
