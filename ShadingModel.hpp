@@ -16,9 +16,6 @@
 #include "FinishObj.hpp"
 
 #include <iostream>
-#include <fstream>
-#include <string>
-
 #include <stdlib.h>
 #include <stdio.h>
 

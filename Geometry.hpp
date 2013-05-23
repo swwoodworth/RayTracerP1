@@ -9,12 +9,10 @@
 #include "RotateObj.hpp"
 
 #include <iostream>
-#include <fstream>
-#include <string>
-#include <vector>
-
 #include <stdlib.h>
 #include <stdio.h>
+
+#include <vector>
 
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp" //perspective, trans etc
