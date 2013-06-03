@@ -26,8 +26,8 @@ void BoxObj::parse(ifstream &povFile) {
    string line;
    char *line2;
    //char *token2;
-   
    getline(povFile, line);
+
    line2 = (char*)line.c_str();
 
    corner1.x = atof(strtok (line2,"{ <,>}"));

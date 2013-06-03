@@ -37,8 +37,10 @@ void RayTracer::genRays()
             s_prime = p_0 + u_s*u + v_s*v + w_s*w;
          
             d = normalize(s_prime - p_0);
-         
-            p_color = raytrace(d, p_0, 0, 0);
+            if(i == 280 && j == 320)
+               p_color = raytrace(d, p_0, 0, 0, 1);
+            else 
+               p_color = raytrace(d, p_0, 0, 0, 0);
          }
          else
          {
@@ -64,8 +66,11 @@ void RayTracer::genRays()
                s_prime = p_0 + u_s_array[k]*u + v_s_array[k]*v + w_s*w;
          
                d = normalize(s_prime - p_0);
-         
-               p_color += raytrace(d, p_0, 0, 0);
+               
+               if(i == 280 && j == 320)
+                  p_color += raytrace(d, p_0, 0, 0, 1);
+               else 
+                  p_color += raytrace(d, p_0, 0, 0, 0);
             }
             
             if(antiAliasLevel == 4)
@@ -75,15 +80,21 @@ void RayTracer::genRays()
          }
          
          //cout << p_color.x << ", " << p_color.y << ", " << p_color.z << endl;
-         tga.colorPixel(i*(screenWidth) + j, p_color);
+         if(i == 280 && j == 320)
+         {
+            cout << "Final Color: "  << p_color.x << ", " << p_color.y << ", " << p_color.z << endl;
+            tga.colorPixel(i*(screenWidth) + j, vec3(0,0,0));
+         }
+         else
+            tga.colorPixel(i*(screenWidth) + j, p_color);
       }
-      cout << i << endl;
+      //cout << i << endl;
    }
    
    tga.writeTGA(true);
 }
 
-vec3 RayTracer::raytrace(vec3 d, vec3 p_0, int reflectDepth, int refractDepth)
+vec3 RayTracer::raytrace(vec3 d, vec3 p_0, int reflectDepth, int refractDepth, int print)
 {
    vec3 intersect, objIntersect, norm, l_norm, v_norm, p_1, p_2, shadowRay;
    float t, reflect, refract, refractVal;
@@ -113,6 +124,8 @@ vec3 RayTracer::raytrace(vec3 d, vec3 p_0, int reflectDepth, int refractDepth)
       temp = geom->intersect(d_new, p_0_new, addr);
       if(temp == true && t > 0.0 && t < depth)
       {
+         if (print == 1)
+            cout << "Init Direction " << print << " : "  << d_new.x << ", " << d_new.y << ", " << d_new.z << endl;
          depth = t;
 
          mat4 m_i_t = transpose(m_i);
@@ -122,6 +135,8 @@ vec3 RayTracer::raytrace(vec3 d, vec3 p_0, int reflectDepth, int refractDepth)
          refractVal = geom->pObj->pigment.w;
       
          intersect = vec3(p_0 + (d * t));
+         if (print >= 1)
+            cout << "Intersect " << print << " : "  << intersect.x << ", " << intersect.y << ", " << intersect.z << endl;
          objIntersect = vec3(p_0_new + (d_new * t));
 
          //geometry normal
@@ -173,7 +188,16 @@ vec3 RayTracer::raytrace(vec3 d, vec3 p_0, int reflectDepth, int refractDepth)
             vec3 p_3 = intersect + newD/2500.0f;
             //newD = vec3(m*vec4(newD, 0));
             //p_3 = vec3(m*vec4(p_3, 1));
-            vec3 reflectedColor = raytrace(newD,p_3,reflectDepth+1, refractDepth);
+      
+            vec3 reflectedColor;
+            /*if(print >= 1)
+            {
+               reflectedColor = raytrace(newD,p_3,reflectDepth+1, refractDepth+1, print+1);
+            }
+            else*/
+            {
+               reflectedColor = raytrace(newD,p_3,reflectDepth+1, refractDepth, 0);
+            }
          
             /*if(reflectedColor == vec3(0.0,0.0,0.0))
             {
@@ -215,7 +239,13 @@ vec3 RayTracer::raytrace(vec3 d, vec3 p_0, int reflectDepth, int refractDepth)
                p_2 = intersect + refractT/2500.0f;
                //refractT = vec3(m*vec4(refractT,0));
                //p_2 = vec3(m*vec4(p_2,1));
-               p_color = (1-reflect-refractVal)*p_color + reflect*reflectedColor + refractVal*raytrace(refractT,p_2,reflectDepth+1, refractDepth+1);
+               if(print >= 1)
+               {
+                  cout << "Refract Direction " << print << " : "  << refractT.x << ", " << refractT.y << ", " << refractT.z << endl;
+                  p_color = (1-reflect-refractVal)*p_color + reflect*reflectedColor + refractVal*raytrace(refractT,p_2,reflectDepth+1, refractDepth+1, print+1);
+               }
+               else
+                  p_color = (1-reflect-refractVal)*p_color + reflect*reflectedColor + refractVal*raytrace(refractT,p_2,reflectDepth+1, refractDepth+1, 0);
             }
          }
       
@@ -225,7 +255,17 @@ vec3 RayTracer::raytrace(vec3 d, vec3 p_0, int reflectDepth, int refractDepth)
             vec3 p_3 = intersect + newD/2500.0f;
             //newD = vec3(m*vec4(newD, 0));
             //p_3 = vec3(m*vec4(p_3, 1));
-            vec3 reflectedColor = raytrace(newD,p_3,reflectDepth+1, refractDepth);
+            vec3 reflectedColor;
+            if(print >= 1)
+            {
+               cout << "Reflected Direction " << print << " : "  << newD.x << ", " << newD.y << ", " << newD.z << endl;
+               reflectedColor = raytrace(newD,p_3,reflectDepth+1, refractDepth, print+1);
+            }
+            else
+            {
+               
+               reflectedColor = raytrace(newD,p_3,reflectDepth+1, refractDepth, 0);
+            }
             if(reflectedColor != vec3(0.0,0.0,0.0))
             {
                p_color = (1-reflect)*p_color + (reflect)*reflectedColor;

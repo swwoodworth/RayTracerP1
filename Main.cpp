@@ -136,21 +136,21 @@ void parsePOV(ifstream &povFile)
 
       if(token.compare("camera") == 0)
       {
-         //cout << "Found Camera\n";
+         cout << "Found Camera\n";
          CameraObj *cam = new CameraObj();
          cam->parse(povFile);
          cameras.push_back(cam);
       }
       if(token.compare("light_source") == 0)
       {
-         //cout << "Found Light Source\n";
+         cout << "Found Light Source\n";
          LightSourceObj *light = new LightSourceObj();
          light->parse(povFile);
          lights.push_back(light);
       }
       if(token.compare("sphere") == 0)
       {
-         //cout << "Found sphere\n";
+         cout << "Found sphere\n";
          SphereObj *sphere = new SphereObj();
          sphere->parse(povFile);
          geometry.push_back(sphere);
@@ -158,7 +158,7 @@ void parsePOV(ifstream &povFile)
       }
       if(token.compare("box") == 0)
       {
-         //cout << "Found box\n";
+         cout << "Found box\n";
          BoxObj *box = new BoxObj();
          box->parse(povFile);
          geometry.push_back(box);
@@ -166,7 +166,7 @@ void parsePOV(ifstream &povFile)
       } 
       if(token.compare("cone") == 0)
       {
-         //cout << "Found cone\n";
+         cout << "Found cone\n";
          ConeObj *cone = new ConeObj();
          cone->parse(povFile);
          //geometry.push_back(cone);
@@ -174,7 +174,7 @@ void parsePOV(ifstream &povFile)
       } 
       if(token.compare("plane") == 0)
       {
-         //cout << "Found plane\n";
+         cout << "Found plane\n";
          PlaneObj *plane = new PlaneObj();
          plane->parse(povFile);
          geometry.push_back(plane);
@@ -182,7 +182,7 @@ void parsePOV(ifstream &povFile)
       } 
       if(token.compare("triangle") == 0)
       {
-         //cout << "Found triangle\n";
+         cout << "Found triangle\n";
          TriangleObj *triangle = new TriangleObj();
          triangle->parse(povFile);
          geometry.push_back(triangle);
@@ -192,6 +192,11 @@ void parsePOV(ifstream &povFile)
       if(token.compare("//") == 0)
       {
          getline(povFile, token);  //swallow comment line
+         //cout << token;
+      } 
+      else if(token.compare(0,2,"//") == 0)
+      {
+         getline(povFile, token);  //swallow comment line with no space
          //cout << token;
       } 
       //cout << token << endl;

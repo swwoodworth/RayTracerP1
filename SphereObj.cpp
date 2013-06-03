@@ -60,6 +60,8 @@ void SphereObj::parse(ifstream &povFile)
    center = location;
 
    parseGeometry(povFile);
+   
+   //cout << "found a sphere" << endl;
 }
 
 bool SphereObj::intersect(vec3 d, vec3 p_0, float* t)

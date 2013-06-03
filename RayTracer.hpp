@@ -55,7 +55,7 @@ class RayTracer {
    RayTracer(); //default constructor
    ~RayTracer(); //destructor
    void genRays();
-   vec3 raytrace(vec3 d, vec3 p_0, int reflectDepth, int refractDepth);
+   vec3 raytrace(vec3 d, vec3 p_0, int reflectDepth, int refractDepth, int print);
    int findClosest(vec3 p_0, vec3 d);
    int findClosestPlane(vec3 p_0, vec3 d);
    bool isShadowed(vec3 shadowRay, vec3 p_1, float distance);

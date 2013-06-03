@@ -47,6 +47,7 @@ void Geometry::parseGeometry(ifstream &povFile) {
          sObj = new ScaleObj();
          sObj->parse(povFile);
          m = (sObj->getScale()) * m;
+         cout << sObj->scale.x << endl;
       }
       else if(token.compare("rotate") == 0)
       {
