@@ -64,6 +64,6 @@ void FinishObj::parse(ifstream &povFile) {
          ior = atof(strtok (NULL,"{ <,>}"));
       token2 = strtok (NULL,"{ <,>}");
    }
-   
+   //cout << "refraction " << refraction << "reflection " << reflection << endl;
    return;
 }

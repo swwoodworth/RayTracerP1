@@ -28,27 +28,45 @@ void TriangleObj::parse(ifstream &povFile) {
    //char *token2;
    
    getline(povFile, line);
-   
-   getline(povFile, line);
-   line2 = (char*)line.c_str();
+   if(line == "")
+   {
+      getline(povFile, line);
+      line2 = (char*)line.c_str();
 
-   corner1.x = atof(strtok (line2,"{ <,>}"));
-   corner1.y = atof(strtok (NULL,"{ <,>}"));
-   corner1.z = atof(strtok (NULL,"{ <,>}"));
+      corner1.x = atof(strtok (line2,"{ <,>}"));
+      corner1.y = atof(strtok (NULL,"{ <,>}"));
+      corner1.z = atof(strtok (NULL,"{ <,>}"));
    
-   getline(povFile, line);
-   line2 = (char*)line.c_str();
+      getline(povFile, line);
+      line2 = (char*)line.c_str();
      
-   corner2.x = atof(strtok (line2,"{ <,>}"));
-   corner2.y = atof(strtok (NULL,"{ <,>}"));
-   corner2.z = atof(strtok (NULL,"{ <,>}")); 
+      corner2.x = atof(strtok (line2,"{ <,>}"));
+      corner2.y = atof(strtok (NULL,"{ <,>}"));
+      corner2.z = atof(strtok (NULL,"{ <,>}")); 
    
-   getline(povFile, line);
-   line2 = (char*)line.c_str();
+      getline(povFile, line);
+      line2 = (char*)line.c_str();
    
-   corner3.x = atof(strtok (line2,"{ <,>}"));
-   corner3.y = atof(strtok (NULL,"{ <,>}"));
-   corner3.z = atof(strtok (NULL,"{ <,>}"));
+      corner3.x = atof(strtok (line2,"{ <,>}"));
+      corner3.y = atof(strtok (NULL,"{ <,>}"));
+      corner3.z = atof(strtok (NULL,"{ <,>}"));
+   }
+   else
+   {
+      line2 = (char*)line.c_str();
+
+      corner1.x = atof(strtok (line2,"{ <,>}"));
+      corner1.y = atof(strtok (NULL,"{ <,>}"));
+      corner1.z = atof(strtok (NULL,"{ <,>}"));
+     
+      corner2.x = atof(strtok (NULL,"{ <,>}"));
+      corner2.y = atof(strtok (NULL,"{ <,>}"));
+      corner2.z = atof(strtok (NULL,"{ <,>}")); 
+   
+      corner3.x = atof(strtok (NULL,"{ <,>}"));
+      corner3.y = atof(strtok (NULL,"{ <,>}"));
+      corner3.z = atof(strtok (NULL,"{ <,>}"));
+   }
    
    center = (corner1 + corner2 + corner3)/3.0f;
 

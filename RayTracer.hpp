@@ -27,6 +27,8 @@
 #include "glm/gtc/matrix_transform.hpp" //perspective, trans etc
 #include "glm/gtc/type_ptr.hpp" //value_ptr
 
+#define PI 3.14159265359
+
 using namespace std;
 using namespace glm;
 
@@ -55,7 +57,7 @@ class RayTracer {
    RayTracer(); //default constructor
    ~RayTracer(); //destructor
    void genRays();
-   vec3 raytrace(vec3 d, vec3 p_0, int reflectDepth, int refractDepth, int print);
+   vec3 raytrace(vec3 d, vec3 p_0, int reflectDepth, int refractDepth, int print, int globalIll);
    int findClosest(vec3 p_0, vec3 d);
    int findClosestPlane(vec3 p_0, vec3 d);
    bool isShadowed(vec3 shadowRay, vec3 p_1, float distance);
@@ -66,6 +68,8 @@ class RayTracer {
    void pixelToWorldYAA4(int in_y, float *array);
    void pixelToWorldXAA9(int in_x, float *array);
    void pixelToWorldYAA9(int in_y, float *array);
+   vec3 cosineSampleHemisphere(float u1, float u2);
+   vec3 hemisphereToNormalTransform(vec3 ray, vec3 normal);
 
 };
 

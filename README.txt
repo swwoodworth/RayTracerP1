@@ -19,29 +19,19 @@ Anti-alias Levels:
 
 To Run: 
    $ make
-   $ ./RayTracer 640 480 -I simple.pov 0 9
+   $ ./RayTracer 480 480 -I cornellBox2.pov 0 0
    
-Times:  (average of 3 runs)
-   balls2 - 7.5 seconds 
-   gnarly - 23 seconds
-   bunny_large - 1.8 seconds
-   program4 - 5.5 seconds
-   
+Test File:
+   cornellBox
+   cornellBox2
 
 Working: 
-All of the features of program 4 appear to be working with some exceptions. 
-Both gnarly.pov and balls2.pov do not look correct (see handin images). 
-However, I ran these files with my part3 code (it took about 4 mins to run)
-and got the same image. This means that whatever bug is leading to the 
-missing/smaller spheres was pre-existing. I don't know what to do at this point
-to debug. 
-
-My custom image is called program4.pov
+Global illumination is fully working! I created cornellBox2.pov as a custom
+image to test the global illumination. The test images were created using 1
+level of recursion and 256 rays, however my software is capable of using 
+an indefinite number of resurses.
 
 Notes:
-There appears to be some floating point error on my machine on the 
-valentine2.pov where the two spheres overlap. This may not occur on all 
-machines.
 
 My parser only works with unix (newline) and windows (carriage return newline) 
 formatted files. It will not work with the classic mac (carriage return) 

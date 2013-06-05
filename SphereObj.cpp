@@ -62,6 +62,10 @@ void SphereObj::parse(ifstream &povFile)
    parseGeometry(povFile);
    
    //cout << "found a sphere" << endl;
+   //cout << "Radius: " << radius;
+   //cout << "  reflection: " << fObj->reflection;
+   //cout << "  refraction: " << fObj->refraction;
+   //cout << "  ior: " << fObj->ior << endl;
 }
 
 bool SphereObj::intersect(vec3 d, vec3 p_0, float* t)
@@ -71,7 +75,7 @@ bool SphereObj::intersect(vec3 d, vec3 p_0, float* t)
    vec3 e = (p_0 - location);
    
    a = dot(d,d);
-   b = dot(2.0f*d, e);
+   b = 2.0f*dot(d, e);
    c = dot(e, e) - pow(radius,2);
 
    discrim = pow(b,2) - 4*a*c;
@@ -100,7 +104,9 @@ bool SphereObj::intersect(vec3 d, vec3 p_0, float* t)
 vec3 SphereObj::getNormal(vec3 intersect) 
 {
    //cout << "here" << endl;
-   return normalize(vec3(intersect - location));
+   vec3 normal = normalize(vec3(intersect - location));
+   //cout << normal.x << " " << normal.y << " " << normal.z << endl;
+   return normal;
 }
 
 vec3 SphereObj::getBBoxCorner1()

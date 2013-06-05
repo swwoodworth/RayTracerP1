@@ -5,7 +5,7 @@ ShadingModel::ShadingModel() {
 
 ShadingModel::~ShadingModel() {}
 
-vec3 ShadingModel::phong(vec3 norm, vec3 l_norm, vec3 v_norm, Geometry *geom, int l) {   
+vec3 ShadingModel::phong(vec3 norm, vec3 l_norm, vec3 v_norm, Geometry *geom, int l, vec3 ambient) {   
    float n_dot_l = dot(norm,l_norm);
    //cout << n_dot_l << endl;
 
@@ -27,12 +27,12 @@ vec3 ShadingModel::phong(vec3 norm, vec3 l_norm, vec3 v_norm, Geometry *geom, in
    v_dot_r = pow(v_dot_r, (float)(1.0/geom->fObj->roughness));
    //cout << v_dot_r << endl;
                            
-   return vec3((geom->fObj->diffuse*geom->pObj->pigment.x*n_dot_l*lights[l]->color.x + geom->fObj->ambient*geom->pObj->pigment.x*lights[l]->color.x + geom->fObj->specular*geom->pObj->pigment.x*v_dot_r*lights[l]->color.x),
-               (geom->fObj->diffuse*geom->pObj->pigment.y*n_dot_l*lights[l]->color.y + geom->fObj->ambient*geom->pObj->pigment.y*lights[l]->color.y + geom->fObj->specular*geom->pObj->pigment.y*v_dot_r*lights[l]->color.y), 
-               (geom->fObj->diffuse*geom->pObj->pigment.z*n_dot_l*lights[l]->color.z + geom->fObj->ambient*geom->pObj->pigment.z*lights[l]->color.z + geom->fObj->specular*geom->pObj->pigment.z*v_dot_r*lights[l]->color.z));
+   return vec3((geom->fObj->diffuse*geom->pObj->pigment.x*n_dot_l*lights[l]->color.x + ambient.x + geom->fObj->specular*geom->pObj->pigment.x*v_dot_r*lights[l]->color.x),
+               (geom->fObj->diffuse*geom->pObj->pigment.y*n_dot_l*lights[l]->color.y + ambient.y + geom->fObj->specular*geom->pObj->pigment.y*v_dot_r*lights[l]->color.y), 
+               (geom->fObj->diffuse*geom->pObj->pigment.z*n_dot_l*lights[l]->color.z + ambient.z + geom->fObj->specular*geom->pObj->pigment.z*v_dot_r*lights[l]->color.z));
 }
 
-vec3 ShadingModel::gaussian(vec3 norm, vec3 l_norm, vec3 v_norm, Geometry *geom, int l) {   
+vec3 ShadingModel::gaussian(vec3 norm, vec3 l_norm, vec3 v_norm, Geometry *geom, int l, vec3 ambient) {   
    float n_dot_l = dot(norm,l_norm);
    //cout << n_dot_l << endl;
 
@@ -49,7 +49,7 @@ vec3 ShadingModel::gaussian(vec3 norm, vec3 l_norm, vec3 v_norm, Geometry *geom,
    exponent = -(exponent * exponent);
    float gaussianTerm = exp(exponent);
    
-   return vec3((geom->fObj->diffuse*geom->pObj->pigment.x*n_dot_l*lights[l]->color.x + geom->fObj->ambient*geom->pObj->pigment.x*lights[l]->color.x + geom->fObj->specular*geom->pObj->pigment.x*gaussianTerm*lights[l]->color.x),
-               (geom->fObj->diffuse*geom->pObj->pigment.y*n_dot_l*lights[l]->color.y + geom->fObj->ambient*geom->pObj->pigment.y*lights[l]->color.y + geom->fObj->specular*geom->pObj->pigment.y*gaussianTerm*lights[l]->color.y), 
-               (geom->fObj->diffuse*geom->pObj->pigment.z*n_dot_l*lights[l]->color.z + geom->fObj->ambient*geom->pObj->pigment.z*lights[l]->color.z + geom->fObj->specular*geom->pObj->pigment.z*gaussianTerm*lights[l]->color.z));
+   return vec3((geom->fObj->diffuse*geom->pObj->pigment.x*n_dot_l*lights[l]->color.x + ambient.x + geom->fObj->specular*geom->pObj->pigment.x*gaussianTerm*lights[l]->color.x),
+               (geom->fObj->diffuse*geom->pObj->pigment.y*n_dot_l*lights[l]->color.y + ambient.y + geom->fObj->specular*geom->pObj->pigment.y*gaussianTerm*lights[l]->color.y), 
+               (geom->fObj->diffuse*geom->pObj->pigment.z*n_dot_l*lights[l]->color.z + ambient.z + geom->fObj->specular*geom->pObj->pigment.z*gaussianTerm*lights[l]->color.z));
 }

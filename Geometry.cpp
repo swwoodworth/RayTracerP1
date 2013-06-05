@@ -14,6 +14,17 @@ Geometry::Geometry(int id) {
 
 Geometry::~Geometry() {}
 
+// print out matrix by rows
+void printMat(glm::mat4  mat){
+  int i,j;
+  for (j=0; j<4; j++){
+    for (i=0; i<4; i++){
+    printf("%f ",mat[i][j]);
+  }
+  printf("\n");
+ }
+}
+
 void Geometry::parseGeometry(ifstream &povFile) {
    string token;
    
@@ -24,6 +35,8 @@ void Geometry::parseGeometry(ifstream &povFile) {
       if(token.compare("}") == 0)
       { 
          m_i = glm::inverse(m);
+         //printMat(m);
+         //cout << endl;
          return; // found end of parameters
       }
       else if(token.compare("pigment") == 0)
@@ -47,7 +60,6 @@ void Geometry::parseGeometry(ifstream &povFile) {
          sObj = new ScaleObj();
          sObj->parse(povFile);
          m = (sObj->getScale()) * m;
-         cout << sObj->scale.x << endl;
       }
       else if(token.compare("rotate") == 0)
       {
