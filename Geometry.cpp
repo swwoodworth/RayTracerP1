@@ -73,6 +73,10 @@ void Geometry::parseGeometry(ifstream &povFile) {
       {
          perlin = true;
       }
+      else if(token.compare("perlinNormal") == 0)
+      {
+         perlinNormal = true;
+      }
    }
 }
 

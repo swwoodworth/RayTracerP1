@@ -44,6 +44,7 @@ class Geometry : public RayTracerObject {
     mat4 m;
     mat4 m_i;
     bool perlin;
+    bool perlinNormal;
 };
 
 #endif

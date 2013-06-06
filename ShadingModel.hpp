@@ -43,6 +43,8 @@ class ShadingModel {
     ~ShadingModel();
     vec3 phong(vec3 intersect, vec3 norm, vec3 l_norm, vec3 v_norm, Geometry *geom, int l, vec3 ambient);
     vec3 gaussian(vec3 intersect, vec3 norm, vec3 l_norm, vec3 v_norm, Geometry *geom, int l, vec3 ambient);
+    vec4 getPigment(Geometry *geom, vec3 intersect);
+
 };
 
 #endif
