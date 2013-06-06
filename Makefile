@@ -1,6 +1,7 @@
 OBJS = Main.o RayTracerObject.o ShadingModel.o CameraObj.o LightSourceObj.o TranslateObj.o \
        ScaleObj.o RotateObj.o PigmentObj.o FinishObj.o SphereObj.o BoxObj.o \
-       ConeObj.o PlaneObj.o TriangleObj.o BBox.o Geometry.o RayTracer.o TGAWriter.o
+       ConeObj.o PlaneObj.o TriangleObj.o BBox.o Geometry.o RayTracer.o TGAWriter.o \
+       Perlin.o
 CC = g++
 DEBUG = -g
 CFLAGS = -O2 -Wall -Werror -c $(DEBUG)
@@ -65,6 +66,9 @@ RayTracer.o : RayTracer.hpp RayTracer.cpp
 	
 TGAWriter.o : TGAWriter.hpp TGAWriter.cpp
 	$(CC) $(CFLAGS) TGAWriter.cpp
+	
+Perlin.o : Perlin.hpp Perlin.cpp
+	$(CC) $(CFLAGS) Perlin.cpp
 
 clean:
 	\rm *.o RayTracer
@@ -88,6 +92,7 @@ tar:
 	         Geometry.hpp Geometry.cpp \
 	         RayTracer.hpp RayTracer.cpp \
 	         TGAWriter.hpp TGAWriter.cpp \
+	         Perlin.hpp Perlin.cpp \
 	         glm README.txt \
 	         *.pov *.tga \
             Main.cpp Makefile

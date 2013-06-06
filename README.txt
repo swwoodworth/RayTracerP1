@@ -13,7 +13,7 @@ Shading Modes:
    1 - Gaussian
    
 Anti-alias Levels:
-   0 - none
+   1 - none
    4 - 4X
    9 - 9X
 
@@ -22,8 +22,8 @@ To Run:
    $ ./RayTracer 480 480 -I cornellBox2.pov 0 0
    
 Test File:
-   cornellBox
-   cornellBox2
+   cornellBox - 1:37
+   cornellBox2 - 2:06
 
 Working: 
 Global illumination is fully working! I created cornellBox2.pov as a custom

@@ -100,7 +100,7 @@ int main(int argc, char* argv[])
    }
    
    antiAliasLevel = atoi(argv[6]);
-   if(antiAliasLevel != 0 && antiAliasLevel != 4 && antiAliasLevel != 9)
+   if(antiAliasLevel != 1 && antiAliasLevel != 4 && antiAliasLevel != 9)
    {
       cout << "Invalid anti-aliasing level\n";
       return -1;

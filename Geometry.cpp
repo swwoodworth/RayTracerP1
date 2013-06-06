@@ -4,12 +4,14 @@ Geometry::Geometry() {
    ObjID = -1;
    m = mat4(1.0f);
    m_i = mat4(1.0f);
+   perlin = false;
 }
 
 Geometry::Geometry(int id) {
    ObjID = id;
    m = mat4(1.0f);
    m_i = mat4(1.0f);
+   perlin = false;
 }
 
 Geometry::~Geometry() {}
@@ -66,6 +68,10 @@ void Geometry::parseGeometry(ifstream &povFile) {
          rObj = new RotateObj();
          rObj->parse(povFile);
          m = (rObj->getRotate()) * m;
+      }
+      else if(token.compare("perlin") == 0)
+      {
+         perlin = true;
       }
    }
 }

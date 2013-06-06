@@ -11,7 +11,7 @@ Geometry* intersectBBTree(BBox bBox, vec3 p_0, vec3 d, float* t);
 void RayTracer::genRays()
 {
    TGAWriter tga(screenWidth, screenHeight);
-   float  u_s, v_s, w_s;
+   float  w_s;
    float u_s_array[9], v_s_array[9];
    vec3 u, v, w, p_0, p_color, d, s_prime;
    
@@ -24,60 +24,45 @@ void RayTracer::genRays()
       for (int j = 0; j < screenWidth; j++)
       {  
          p_color = vec3(0.0,0.0,0.0);
-         if(antiAliasLevel == 0)
+         if(antiAliasLevel == 1)
          {
-            u_s = pixelToWorldX(j);
-            v_s = pixelToWorldY(i);
-            w_s = -1;
-            //cout << i_x << ", " << i_y << endl;
-            u = cameras[0]->right/ length(cameras[0]->right);
-            v = cameras[0]->up/ length(cameras[0]->up);
-            w =  cross(u, v);
+            u_s_array[0] = pixelToWorldX(j);
+            v_s_array[0] = pixelToWorldY(i);
+         }
          
-            s_prime = p_0 + u_s*u + v_s*v + w_s*w;
-         
+         if(antiAliasLevel == 4)
+         {
+            pixelToWorldXAA9(j, u_s_array);
+            pixelToWorldYAA9(i, v_s_array);
+         }
+         if(antiAliasLevel == 9)
+         {
+            pixelToWorldXAA9(j, u_s_array);
+            pixelToWorldYAA9(i, v_s_array);
+         }
+      
+         w_s = -1;
+      
+         u = cameras[0]->right/ length(cameras[0]->right);
+         v = cameras[0]->up/ length(cameras[0]->up);
+         w =  cross(u, v);
+      
+         for(int k = 0; k < antiAliasLevel; k++)
+         {
+            s_prime = p_0 + u_s_array[k]*u + v_s_array[k]*v + w_s*w;
+      
             d = normalize(s_prime - p_0);
-            /*if(i == 280 && j == 320)
-               p_color = raytrace(d, p_0, 0, 0, 1);
-            else */
-               p_color = raytrace(d, p_0, 0, 0, 0, 1);
-         }
-         else
-         {
-            if(antiAliasLevel == 4)
-            {
-               pixelToWorldXAA9(j, u_s_array);
-               pixelToWorldYAA9(i, v_s_array);
-            }
-            if(antiAliasLevel == 9)
-            {
-               pixelToWorldXAA9(j, u_s_array);
-               pixelToWorldYAA9(i, v_s_array);
-            }
-         
-            w_s = -1;
-         
-            u = cameras[0]->right/ length(cameras[0]->right);
-            v = cameras[0]->up/ length(cameras[0]->up);
-            w =  cross(u, v);
-         
-            for(int k = 0; k < antiAliasLevel; k++)
-            {
-               s_prime = p_0 + u_s_array[k]*u + v_s_array[k]*v + w_s*w;
-         
-               d = normalize(s_prime - p_0);
-               
-               /*if(i == 280 && j == 320)
-                  p_color += raytrace(d, p_0, 0, 0, 1);
-               else */
-                  p_color += raytrace(d, p_0, 0, 0, 0, 1);
-            }
             
-            if(antiAliasLevel == 4)
-               p_color /= 4.0f; 
-            if(antiAliasLevel == 9)
-               p_color /= 9.0f; 
+            /*if(i == 280 && j == 320)
+               p_color += raytrace(d, p_0, 0, 0, 1);
+            else */
+               p_color += raytrace(d, p_0, 0, 0, 0, 0);
          }
+         
+         if(antiAliasLevel == 4)
+            p_color /= 4.0f; 
+         if(antiAliasLevel == 9)
+            p_color /= 9.0f; 
          
          //cout << p_color.x << ", " << p_color.y << ", " << p_color.z << endl;
          /*if(i == 280 && j == 320)
@@ -140,8 +125,6 @@ vec3 RayTracer::raytrace(vec3 d, vec3 p_0, int reflectDepth, int refractDepth, i
             cout << "Intersect " << print << " : "  << intersect.x << ", " << intersect.y << ", " << intersect.z << endl;
          
          objIntersect = vec3(p_0_new + (d_new * t));
-         if(reflect > 0.0)
-            cout << objIntersect.x << ", " << objIntersect.y << ", " << objIntersect.z << endl;
          objIntersect = vec3(m_i*(vec4(intersect, 1)));
 
          //geometry normal
@@ -196,14 +179,14 @@ vec3 RayTracer::raytrace(vec3 d, vec3 p_0, int reflectDepth, int refractDepth, i
             {
                if(shadingMode == 0)  //Phong
                   if(globalIll > 0)
-                     p_color += shadingModel.phong(norm, l_norm, v_norm, geom, l, globalIllAmbient);
+                     p_color += shadingModel.phong(intersect, norm, l_norm, v_norm, geom, l, globalIllAmbient);
                   else
-                     p_color += shadingModel.phong(norm, l_norm, v_norm, geom, l, ambient);
+                     p_color += shadingModel.phong(intersect, norm, l_norm, v_norm, geom, l, ambient);
                else if(shadingMode == 1)             // Gaussian Distribution Specular - some code from http://www.arcsynthesis.org/gltut/Illumination/Tut11%20Gaussian.html
                   if(globalIll > 0)
-                     p_color += shadingModel.gaussian(norm, l_norm, v_norm, geom, l, globalIllAmbient);
+                     p_color += shadingModel.gaussian(intersect, norm, l_norm, v_norm, geom, l, globalIllAmbient);
                   else
-                     p_color += shadingModel.gaussian(norm, l_norm, v_norm, geom, l, ambient);
+                     p_color += shadingModel.gaussian(intersect, norm, l_norm, v_norm, geom, l, ambient);
             }
          }
          //p_color = l_norm;

@@ -43,6 +43,7 @@ class Geometry : public RayTracerObject {
     vec3 center;
     mat4 m;
     mat4 m_i;
+    bool perlin;
 };
 
 #endif
