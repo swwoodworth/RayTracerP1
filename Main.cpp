@@ -8,6 +8,7 @@
 #include "TriangleObj.hpp"
 #include "BBox.hpp"
 #include "RayTracer.hpp"
+#include "TGAReader.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -122,6 +123,12 @@ int main(int argc, char* argv[])
    */
    RayTracer rt;
    rt.genRays();
+   
+   int height, width;
+   int* addr1 = &width;
+   int* addr2 = &height;
+   TGAReader reader;
+   reader.TGARead("valentine2.tga", addr1, addr2);
    //cout << "I ran!\n";
    return 0;
 }

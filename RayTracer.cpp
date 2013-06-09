@@ -73,7 +73,7 @@ void RayTracer::genRays()
          else*/
             tga.colorPixel(i*(screenWidth) + j, p_color);
       }
-      cout << i << endl;
+      //cout << i << endl;
    }
    
    tga.writeTGA(true);

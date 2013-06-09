@@ -43,7 +43,7 @@ void ScaleObj::parse(ifstream &povFile) {
       scale.x = scale.y = scale.z = atof(strtok (line2," ,"));
       //cout << scale.x << endl;
    }
-   cout << scale.x << " " << scale.y << " " << scale.z << endl;
+   //cout << scale.x << " " << scale.y << " " << scale.z << endl;
 
    return;
 }
