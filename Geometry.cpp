@@ -5,6 +5,8 @@ Geometry::Geometry() {
    m = mat4(1.0f);
    m_i = mat4(1.0f);
    perlin = false;
+   perlinNormal = false;
+   texture = "";
 }
 
 Geometry::Geometry(int id) {
@@ -12,6 +14,8 @@ Geometry::Geometry(int id) {
    m = mat4(1.0f);
    m_i = mat4(1.0f);
    perlin = false;
+   perlinNormal = false;
+   texture = "";
 }
 
 Geometry::~Geometry() {}
@@ -76,6 +80,20 @@ void Geometry::parseGeometry(ifstream &povFile) {
       else if(token.compare("perlinNormal") == 0)
       {
          perlinNormal = true;
+      }
+      else if(token.compare("texture") == 0)
+      {
+         Texture *newTexture = new Texture();
+         newTexture->parse(povFile);
+         texture = newTexture->name;
+         bool newTex = true;
+         for(int i = 0; i < (int)textures.size(); i++)
+         {
+            if(textures[i]->name == texture)   // check if texture already exists
+               newTex = false;
+         }
+         if(newTex == true)
+            textures.push_back(newTexture);
       }
    }
 }

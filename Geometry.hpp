@@ -7,6 +7,7 @@
 #include "TranslateObj.hpp"
 #include "ScaleObj.hpp"
 #include "RotateObj.hpp"
+#include "Texture.hpp"
 
 #include <iostream>
 #include <stdlib.h>
@@ -20,6 +21,8 @@
 
 using namespace std;
 using namespace glm;
+
+extern vector<Texture*> textures;
 
 class Geometry : public RayTracerObject {
   public:
@@ -45,6 +48,7 @@ class Geometry : public RayTracerObject {
     mat4 m_i;
     bool perlin;
     bool perlinNormal;
+    string texture;
 };
 
 #endif

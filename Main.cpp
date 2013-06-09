@@ -9,6 +9,7 @@
 #include "BBox.hpp"
 #include "RayTracer.hpp"
 #include "TGAReader.hpp"
+#include "Texture.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -36,6 +37,7 @@ vector<TriangleObj*> triangles;
 
 vector<Geometry*> geometry;
 vector<Geometry*> boundedGeometry;
+vector<Texture*> textures;
 
 BBox rootBB;
 

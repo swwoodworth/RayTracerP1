@@ -42,6 +42,8 @@ extern vector<PlaneObj*> planes;
 extern vector<TriangleObj*> triangles;
 
 extern vector<Geometry*> geometry;
+extern vector<Texture*> textures;
+
 
 extern BBox rootBB;
 
