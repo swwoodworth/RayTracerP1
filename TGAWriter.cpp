@@ -38,7 +38,7 @@ void TGAWriter::writeTGA(bool scale) {
    unsigned char rbyte, gbyte, bbyte;
 
    //int x, y;
-   fp = fopen(fileName.c_str(), "w");
+   fp = fopen("output.tga", "w");
    if (!fp)
    {
       printf("tga file could not be written\n");

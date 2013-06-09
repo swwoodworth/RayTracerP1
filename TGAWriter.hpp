@@ -12,12 +12,12 @@
 #include "glm/gtc/matrix_transform.hpp" //perspective, trans etc
 #include "glm/gtc/type_ptr.hpp" //value_ptr
 
-#include "Pixel.hpp"
-
 using namespace std;
 using namespace glm;
 
-extern string fileName;
+struct Pixel {
+   float r, g, b;
+};
 
 class TGAWriter {
    public:

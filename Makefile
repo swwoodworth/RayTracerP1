@@ -1,7 +1,7 @@
 OBJS = Main.o RayTracerObject.o ShadingModel.o CameraObj.o LightSourceObj.o TranslateObj.o \
        ScaleObj.o RotateObj.o PigmentObj.o FinishObj.o SphereObj.o BoxObj.o \
        ConeObj.o PlaneObj.o TriangleObj.o BBox.o Geometry.o RayTracer.o TGAWriter.o \
-       TGAReader.o Perlin.o
+       Perlin.o
 CC = g++
 DEBUG = -g
 CFLAGS = -O2 -Wall -Werror -c $(DEBUG)
@@ -66,10 +66,7 @@ RayTracer.o : RayTracer.hpp RayTracer.cpp
 	
 TGAWriter.o : TGAWriter.hpp TGAWriter.cpp
 	$(CC) $(CFLAGS) TGAWriter.cpp
-	
-TGAReader.o : TGAReader.hpp TGAReader.cpp
-	$(CC) $(CFLAGS) TGAReader.cpp
-	
+		
 Perlin.o : Perlin.hpp Perlin.cpp
 	$(CC) $(CFLAGS) Perlin.cpp
 
@@ -95,7 +92,6 @@ tar:
 	         Geometry.hpp Geometry.cpp \
 	         RayTracer.hpp RayTracer.cpp \
 	         TGAWriter.hpp TGAWriter.cpp \
-	         TGAReader.hpp TGAReader.cpp \
 	         Pixel.hpp \
 	         Perlin.hpp Perlin.cpp \
 	         glm README.txt \
