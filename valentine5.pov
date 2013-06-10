@@ -13,7 +13,7 @@ finish {ambient 0.2 diffuse 0.4 specular 0.5 roughness 0.05}
 scale <1, 2, 1>
 rotate <0, 0, 25>
 translate <-1.2, 0 ,0>
-texture valentine2.tga
+texture checkerboard.tga
 }
 
 sphere { <0, 0, 0>, 2

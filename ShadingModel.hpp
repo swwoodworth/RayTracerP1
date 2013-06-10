@@ -23,6 +23,8 @@
 #include "glm/gtc/matrix_transform.hpp" //perspective, trans etc
 #include "glm/gtc/type_ptr.hpp" //value_ptr
 
+#define PI 3.14159265359
+
 extern vector<CameraObj*> cameras;
 extern vector<LightSourceObj*> lights;
    
@@ -33,6 +35,8 @@ extern vector<PlaneObj*> planes;
 extern vector<TriangleObj*> triangles;
 
 extern vector<Geometry*> geometry;
+extern vector<Texture*> textures;
+
 
 using namespace std;
 using namespace glm;
@@ -43,7 +47,7 @@ class ShadingModel {
     ~ShadingModel();
     vec3 phong(vec3 intersect, vec3 norm, vec3 l_norm, vec3 v_norm, Geometry *geom, int l, vec3 ambient);
     vec3 gaussian(vec3 intersect, vec3 norm, vec3 l_norm, vec3 v_norm, Geometry *geom, int l, vec3 ambient);
-    vec4 getPigment(Geometry *geom, vec3 intersect);
+    vec4 getPigment(Geometry *geom, vec3 intersect, vec3 norm);
 
 };
 

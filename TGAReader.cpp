@@ -18,15 +18,19 @@ Pixel* TGAReader::TGARead(string path, int *texWidth, int *texHeight)
 
 
    //unsigned char rbyte, gbyte, bbyte;
-   
+   char* fileName = (char*)path.c_str();
+   fileName  = strtok (fileName,"{ <,>}");
+   //cout << fileName << endl;
    /* Open the file */
-   if ((fp = fopen(path.c_str(),"r")) == NULL) {
+   if ((fp = fopen(fileName,"r")) == NULL) {
       fprintf(stderr,"File open failed\n");
       exit(-1);
    }
    
    readHeader(fp, hp);
    
+   *texWidth = header.width;
+   *texHeight = header.height;
    /* Allocate space for the image */
    if ((pixels = (Pixel*)malloc(header.width*header.height*sizeof(Pixel))) == NULL) 
    {

@@ -164,6 +164,7 @@ void parsePOV(ifstream &povFile)
          sphere->parse(povFile);
          geometry.push_back(sphere);
          boundedGeometry.push_back(sphere);
+         cout << sphere->texture << endl;
       }
       if(token.compare("box") == 0)
       {
