@@ -73,7 +73,20 @@ vec4 ShadingModel::getPigment(Geometry *geom, vec3 intersect, vec3 norm)
       return p*geom->pObj->pigment;
    }
    else if (geom->texture.compare("") != 0)
-   {    
+   {
+      if(geom->pl == 1)
+      {
+         float distX = (abs((int)floor(intersect.x))) % 2;
+         float distZ = (abs((int)floor(intersect.z))) % 2;
+
+         //cout << distX << distZ << endl;
+         
+         if ((distX == 1 && distZ == 1) || (distX == 0 && distZ == 0))
+            return vec4(.1,.1,.1,1);
+         else
+            return vec4(.9,.9,.9,1);
+         
+      }    
       float u = asin(norm.x)/PI + 0.5;
       //u = norm.x/2 + 0.5;
       float v = asin(norm.y)/PI + 0.5;

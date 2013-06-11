@@ -17,14 +17,14 @@ light_source {<0, 9.5, 0> color rgb <0.5, 0.5, 0.5>}
 sphere { <0,0,0>, 1.5
    translate <1.5, 4.4, 1.5>
    pigment { color rgbf <1, 1, 1, 0.8> }
-   finish { ambient .2 diffuse 0.5 }
+   finish { ambient .2 diffuse 0.5 refraction 1.0 ior 1.3333 }
 }
 
 //Sphere on the ground
 sphere { <0,0,0>, 1.5
    translate <-2.5, 1.5, 2.5>
    pigment { color rgb <1,1,1> }
-   finish { ambient .2 diffuse 0.5 specular 1.0 roughness 0.005 }
+   finish { ambient .2 diffuse 0.5 specular 1.0 roughness 0.005 reflection 0.8 }
 }
 
 //Short box

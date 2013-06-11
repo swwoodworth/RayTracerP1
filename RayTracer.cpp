@@ -67,7 +67,7 @@ void RayTracer::genRays()
                vec3 d_new = normalize(focalPoint - p_0_new);
     
                
-               p_color += raytrace(d_new, p_0_new, 0, 0, 0, 0);
+               p_color += raytrace(d_new, p_0_new, 0, 0, 0, 1);
             }
             p_color /= 25.0f; 
          }
@@ -82,7 +82,7 @@ void RayTracer::genRays()
                /*if(i == 280 && j == 320)
                   p_color += raytrace(d, p_0, 0, 0, 1);
                else */
-                  p_color += raytrace(d, p_0, 0, 0, 0, 0);
+                  p_color += raytrace(d, p_0, 0, 0, 0, 1);
             }
          
             if(antiAliasLevel == 4)
