@@ -95,7 +95,7 @@ void Geometry::parseGeometry(ifstream &povFile) {
          if(newTex == true)
          {
             textures.push_back(newTexture);
-            cout << "added texture" << endl;
+            //cout << "added texture" << endl;
          }
       }
    }

@@ -25,6 +25,7 @@ void PlaneObj::parse(ifstream &povFile) {
    string token;
    string line;
    char *line2;
+   pl = 1;
    //char *token2;
    
    getline(povFile, line);

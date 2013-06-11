@@ -49,6 +49,7 @@ class Geometry : public RayTracerObject {
     bool perlin;
     bool perlinNormal;
     string texture;
+    int pl;
 };
 
 #endif

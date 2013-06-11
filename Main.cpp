@@ -45,6 +45,7 @@ int screenWidth;
 int screenHeight;
 int shadingMode;
 int antiAliasLevel;
+float focalLength;
 
 
 string fileName;
@@ -108,7 +109,7 @@ int main(int argc, char* argv[])
       cout << "Invalid anti-aliasing level\n";
       return -1;
    }
-   
+   focalLength = -1;
    parsePOV(povFile);
    /*std::sort(geometry.begin(), geometry.end(), bBoxSortX);
       for(int i = 0; i< (int) geometry.size(); i++)
@@ -209,6 +210,14 @@ void parsePOV(ifstream &povFile)
          getline(povFile, token);  //swallow comment line with no space
          //cout << token;
       } 
+      else if(token.compare("dof") == 0)
+      {
+         string depthOfField;
+         getline(povFile, depthOfField);
+         char* dOfF  = (char*)depthOfField.c_str();
+   
+         focalLength = atof(strtok (dOfF,"{ <,>}"));
+      }
       //cout << token << endl;
       token = "";
    }

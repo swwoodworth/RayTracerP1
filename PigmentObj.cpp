@@ -43,6 +43,7 @@ void PigmentObj::parse(ifstream &povFile) {
       pigment.w = atof(strtok (NULL," <,>"));
    else
       pigment.w = 0.0;
+   //cout << pigment.w << endl;
       
    return;
 }

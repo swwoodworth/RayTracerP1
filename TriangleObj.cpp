@@ -28,7 +28,7 @@ void TriangleObj::parse(ifstream &povFile) {
    //char *token2;
    
    getline(povFile, line);
-   if(line == "")
+   if(line == "" || line.compare(" {") == 0)
    {
       getline(povFile, line);
       line2 = (char*)line.c_str();
@@ -54,7 +54,7 @@ void TriangleObj::parse(ifstream &povFile) {
    else
    {
       line2 = (char*)line.c_str();
-
+      //cout << line2  << endl;
       corner1.x = atof(strtok (line2,"{ <,>}"));
       corner1.y = atof(strtok (NULL,"{ <,>}"));
       corner1.z = atof(strtok (NULL,"{ <,>}"));

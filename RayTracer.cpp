@@ -24,18 +24,17 @@ void RayTracer::genRays()
       for (int j = 0; j < screenWidth; j++)
       {  
          p_color = vec3(0.0,0.0,0.0);
-         if(antiAliasLevel == 1)
+         if(focalLength != -1 || antiAliasLevel == 1)
          {
             u_s_array[0] = pixelToWorldX(j);
             v_s_array[0] = pixelToWorldY(i);
          }
-         
-         if(antiAliasLevel == 4)
+         else if(antiAliasLevel == 4)
          {
             pixelToWorldXAA9(j, u_s_array);
             pixelToWorldYAA9(i, v_s_array);
          }
-         if(antiAliasLevel == 9)
+         else if(antiAliasLevel == 9)
          {
             pixelToWorldXAA9(j, u_s_array);
             pixelToWorldYAA9(i, v_s_array);
@@ -46,23 +45,52 @@ void RayTracer::genRays()
          u = cameras[0]->right/ length(cameras[0]->right);
          v = cameras[0]->up/ length(cameras[0]->up);
          w =  cross(u, v);
-      
-         for(int k = 0; k < antiAliasLevel; k++)
+         
+         if(focalLength != -1)
          {
-            s_prime = p_0 + u_s_array[k]*u + v_s_array[k]*v + w_s*w;
+            //cout << "depth of field" << endl;
+            s_prime = p_0 + u_s_array[0]*u + v_s_array[0]*v + w_s*w;
       
             d = normalize(s_prime - p_0);
             
-            /*if(i == 280 && j == 320)
-               p_color += raytrace(d, p_0, 0, 0, 1);
-            else */
-               p_color += raytrace(d, p_0, 0, 0, 0, 0);
+            vec3 focalPoint = p_0 + focalLength * (s_prime - p_0);
+            //cout << focalPoint.x << ", " << focalPoint.y << ", " << focalPoint.z << endl;
+            for (int k = 0; k < 25; k++){ // shooting 25 random rays
+               float du = (rand()/float(RAND_MAX))/2;//generating random number
+               float dv = (rand()/float(RAND_MAX))/2;
+               //cout << du << " " << dv << endl;
+               // creating new camera position(or ray start using jittering)
+               vec3 p_0_new = p_0 - .25f*u - .25f*v + (du)*u + (dv)*v;
+               //cout << p_0.x << ", " << p_0.y << ", " << p_0.z << " and " << p_0_new.x << ", " << p_0_new.y << ", " << p_0_new.z << endl;
+    
+               //getting the new direction of ray
+               vec3 d_new = normalize(focalPoint - p_0_new);
+    
+               
+               p_color += raytrace(d_new, p_0_new, 0, 0, 0, 0);
+            }
+            p_color /= 25.0f; 
+         }
+         else
+         {
+            for(int k = 0; k < antiAliasLevel; k++)
+            {
+               s_prime = p_0 + u_s_array[k]*u + v_s_array[k]*v + w_s*w;
+      
+               d = normalize(s_prime - p_0);
+            
+               /*if(i == 280 && j == 320)
+                  p_color += raytrace(d, p_0, 0, 0, 1);
+               else */
+                  p_color += raytrace(d, p_0, 0, 0, 0, 0);
+            }
+         
+            if(antiAliasLevel == 4)
+               p_color /= 4.0f; 
+            if(antiAliasLevel == 9)
+               p_color /= 9.0f; 
          }
          
-         if(antiAliasLevel == 4)
-            p_color /= 4.0f; 
-         if(antiAliasLevel == 9)
-            p_color /= 9.0f; 
          
          //cout << p_color.x << ", " << p_color.y << ", " << p_color.z << endl;
          /*if(i == 280 && j == 320)
@@ -71,9 +99,9 @@ void RayTracer::genRays()
             tga.colorPixel(i*(screenWidth) + j, vec3(0,0,0));
          }
          else*/
-            tga.colorPixel(i*(screenWidth) + j, p_color);
+         tga.colorPixel(i*(screenWidth) + j, p_color);
       }
-      //cout << i << endl;
+      cout << i << endl;
    }
    
    tga.writeTGA(true);
@@ -118,7 +146,8 @@ vec3 RayTracer::raytrace(vec3 d, vec3 p_0, int reflectDepth, int refractDepth, i
       
          reflect = geom->fObj->reflection;
          refract = geom->fObj->refraction;
-         refractVal = geom->pObj->pigment.w;
+         if(refract != 0)
+            refractVal = geom->pObj->pigment.w;
       
          intersect = vec3(p_0 + (d * t));
          if (print >= 1)

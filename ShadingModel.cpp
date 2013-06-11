@@ -73,7 +73,7 @@ vec4 ShadingModel::getPigment(Geometry *geom, vec3 intersect, vec3 norm)
       return p*geom->pObj->pigment;
    }
    else if (geom->texture.compare("") != 0)
-   {
+   {    
       float u = asin(norm.x)/PI + 0.5;
       //u = norm.x/2 + 0.5;
       float v = asin(norm.y)/PI + 0.5;
@@ -92,21 +92,21 @@ vec4 ShadingModel::getPigment(Geometry *geom, vec3 intersect, vec3 norm)
             pixels = textures[i]->pixels;
          }
       }
-      
+   
       float u_prime = width*u - floor(width*u);
       float v_prime = height*v - floor(height*v);
-      
+   
       float u_double_prime = 3*pow(u_prime,2) - 2*pow(u_prime,3);
       float v_double_prime = 3*pow(v_prime,2) - 2*pow(v_prime,3);
 
       //tga.colorPixel(i*(screenWidth) + j, p_color);
       int i =  (int)floor(u*width);
       int j = (int)floor(v*height);
-      
+   
       vec3 ci1j;
       vec3 cij1;
       vec3 ci1j1;
-      
+   
       vec3 cij = vec3(pixels[j*width + i].r, pixels[j*width + i].g, pixels[j*width + i].b);
       if(i == width)
          ci1j = vec3(pixels[j*width].r, pixels[j*width-1].g, pixels[j*width].b);
@@ -130,7 +130,7 @@ vec4 ShadingModel::getPigment(Geometry *geom, vec3 intersect, vec3 norm)
              (1-u_double_prime)*v_double_prime*cij1 +
              u_double_prime*v_double_prime*ci1j1)/255.0f,1);
       //color = vec4(cij,1);
-      cout << color.x << " " <<color.y << " " << color.z << endl;
+      //cout << color.x << " " <<color.y << " " << color.z << endl;
       return color;
    }
    else

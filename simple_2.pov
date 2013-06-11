@@ -15,7 +15,6 @@ sphere { <0, 0, 0>, 2
   finish {ambient 0.2 diffuse 0.4}
   translate <0, 0, 0>
   texture checkerboard.tga
-
 }
 
 plane {<0, 1, 0>, -4

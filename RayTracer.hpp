@@ -52,6 +52,8 @@ extern int screenWidth;
 extern int screenHeight;
 extern int shadingMode;
 extern int antiAliasLevel;
+extern float focalLength;
+
 
 
 class RayTracer {
